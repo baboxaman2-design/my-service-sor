@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service & Project DB - Enterprise Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap');
+        body { font-family: 'Sarabun', sans-serif; background-color: #f1f5f9; }
+        .sidebar-item-active { background-color: #2563eb; color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .page-content { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+        tr.hover-edit:hover { background-color: #eff6ff; cursor: pointer; }
+#login-screen { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+               /* ทำให้ Canvas ของกราฟมีเงาจางๆ */
+              #jobChart, #trendChart, #deviceChart {
+           filter: drop-shadow(0px 10px 8px rgba(0, 0, 0, 0));
+}
+
+/* เพิ่มแอนิเมชันให้ตัวเลขนับถอยหลังตอนขึ้น Dashboard */
+.stat-value {
+    transition: all 0.5s ease;
+}
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md p-8 rounded-[2.5rem] shadow-2xl text-center">
+            <div class="w-20 h-20 bg-blue-600 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <i class="fas fa-lock text-3xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-slate-800 mb-6">เข้าสู่ระบบ JOB-TIGERSOFT</h1>
+            <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();" class="space-y-4">
+                <input type="email" id="email" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none focus:border-blue-500" placeholder="Email" required>
+                <input type="password" id="password" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none focus:border-blue-500" placeholder="Password" required>
+                <button type="submit" id="btnLogin" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition shadow-xl">
+                    เข้าสู่ระบบ
+                </button>
+            </form>
+            <p id="login-error" class="text-red-500 text-sm mt-4 hidden"></p>
+        </div>
+    </div>
+
+    <div class="w-64 bg-[#0f172a] text-white flex flex-col shadow-xl hidden md:flex">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-xl font-bold border-l-4 border-blue-500 pl-3 uppercase">SOR.</h1>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="showPage('dashboard')" id="btn-dashboard" class="sidebar-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition">
+                <i class="fas fa-chart-line w-6"></i> Dashboard
+            </button>
+            <button onclick="showPage('charts')" id="btn-charts" class="sidebar-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition">
+                <i class="fas fa-chart-pie w-6"></i> รายงานกราฟ
+            </button>
+            <button onclick="showPage('input')" id="btn-input" class="sidebar-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition">
+                <i class="fas fa-plus-circle w-6"></i> บันทึกงานใหม่
+            </button>
+            <div class="border-t border-slate-700 my-4"></div>
+            <button onclick="showPage('settings')" id="btn-settings" class="sidebar-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition">
+                <i class="fas fa-cog w-6"></i> ตั้งค่าระบบ
+            </button>
+        </nav>
+ <div class="p-4 border-t border-slate-700">
+                <button onclick="handleLogout()" class="w-full py-2 bg-red-600/20 text-red-400 rounded-lg text-xs hover:bg-red-600 hover:text-white transition">ออกจากระบบ</button>
+            </div>
+
+    </div>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+        
+        <header class="bg-white border-b p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm z-10">
+            <div class="flex items-center gap-4">
+                <h2 id="page-title" class="text-xl font-bold text-slate-800 tracking-tight">Dashboard</h2>
+                <div class="flex gap-2">
+                    <button onclick="exportAll()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 transition">
+                        <i class="fas fa-file-excel"></i> Export All
+                    </button>
+                    <input type="file" id="importFile" accept=".xlsx, .xls" class="hidden" onchange="handleImport(event)">
+                    <button onclick="document.getElementById('importFile').click()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 transition">
+                        <i class="fas fa-file-import"></i> Import Excel
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center bg-slate-100 p-1.5 rounded-xl gap-2">
+                <button onclick="setFilterType('day')" id="f-day" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all">วันนี้</button>
+                <div id="range-inputs" class="flex items-center gap-2 hidden px-2">
+                    <input type="date" id="start-date" class="text-xs p-1 rounded border border-slate-300">
+                    <input type="date" id="end-date" class="text-xs p-1 rounded border border-slate-300">
+                    <button onclick="refreshData()" class="bg-blue-600 text-white p-1 rounded px-3 text-[10px] font-bold">กรอง</button>
+                </div>
+                <button onclick="setFilterType('month')" id="f-month" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all">รายเดือน</button>
+                <button onclick="setFilterType('year')" id="f-year" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all">รายปี</button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-8">
+            
+            <div id="page-dashboard" class="page-content space-y-6">
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-blue-500 group hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">INSTALL</p>
+                             <button onclick="exportByType('INSTALL')" class="text-emerald-500 opacity-0 group-hover:opacity-100 transition" title="Export"><i class="fas fa-file-excel"></i></button>
+                        </div>
+                        <p id="sum-install" onclick="openDetailModal('INSTALL')" class="text-3xl font-bold text-slate-800 cursor-pointer">0</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-green-500 group hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Onsite-Free</p>
+                            <button onclick="exportByType('Onsite-Free')" class="text-emerald-500 opacity-0 group-hover:opacity-100 transition" title="Export"><i class="fas fa-file-excel"></i></button>
+                        </div>
+                        <p id="sum-free" onclick="openDetailModal('Onsite-Free')" class="text-3xl font-bold text-slate-800 cursor-pointer">0</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-orange-500 group hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Onsite-Charge</p>
+                            <button onclick="exportByType('Onsite-Charge')" class="text-emerald-500 opacity-0 group-hover:opacity-100 transition" title="Export"><i class="fas fa-file-excel"></i></button>
+                        </div>
+                        <p id="sum-charge" onclick="openDetailModal('Onsite-Charge')" class="text-3xl font-bold text-slate-800 cursor-pointer">0</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-purple-500 group hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Onsite-Survey</p>
+                            <button onclick="exportByType('Onsite-Survey')" class="text-emerald-500 opacity-0 group-hover:opacity-100 transition" title="Export"><i class="fas fa-file-excel"></i></button>
+                        </div>
+                        <p id="sum-survey" onclick="openDetailModal('Onsite-Survey')" class="text-3xl font-bold text-slate-800 cursor-pointer">0</p>
+                    </div>
+                    <div class="bg-slate-800 p-5 rounded-2xl shadow-sm border-l-4 border-yellow-400 group hover:bg-slate-700 transition text-white">
+                        <div class="flex justify-between items-start">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">PROJECT</p>
+                            <button onclick="exportByType('PROJECT')" class="text-emerald-400 opacity-0 group-hover:opacity-100 transition" title="Export"><i class="fas fa-file-excel"></i></button>
+                        </div>
+                        <p id="sum-project" onclick="openDetailModal('PROJECT')" class="text-3xl font-bold text-yellow-400 cursor-pointer">0</p>
+                    </div>
+                </div>
+
+                <div class="bg-[#0f172a] p-6 rounded-3xl text-white shadow-xl">
+                    <h3 class="text-xs font-bold mb-4 flex items-center uppercase tracking-widest text-blue-400">
+                         <i class="fas fa-microchip mr-2"></i> อุปกรณ์รวมแยกตามประเภท
+
+                    </h3>
+                    <div id="device-totals" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-3"></div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm" id="main-table">
+                            <thead class="bg-slate-50 text-slate-500 border-b">
+                                <tr id="head-row"></tr>
+                            </thead>
+                            <tbody id="data-body" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-charts" class="page-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-700">📈 สถิติงานรายเดือน (แยกตามประเภท)</h3>
+                        <div class="text-xs text-slate-400 font-bold"></div>
+                    </div>
+                    <div class="h-[350px]">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border h-[400px]">
+                        <canvas id="jobChart"></canvas>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border h-[400px]">
+                        <canvas id="deviceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-input" class="page-content hidden max-w-4xl mx-auto">
+                <form id="serviceForm" class="bg-white p-8 rounded-3xl shadow-2xl space-y-8">
+                    <input type="hidden" id="edit-doc-id">
+                    <div class="flex justify-between items-center">
+                        <h3 id="form-title" class="text-xl font-bold text-slate-700 uppercase">บันทึกงานใหม่</h3>
+                        <div class="flex gap-2">
+                             <button type="button" id="btn-cancel-edit" onclick="cancelEdit()" class="hidden text-sm text-slate-500 hover:text-slate-700 font-bold bg-slate-100 px-3 py-1 rounded-lg">ยกเลิก</button>
+                             <button type="button" id="btn-delete" onclick="deleteRecord()" class="hidden text-sm text-red-500 hover:text-red-700 font-bold bg-red-100 px-3 py-1 rounded-lg"><i class="fas fa-trash"></i> ลบ</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase">ประเภทงาน</label>
+                            <select id="jobType" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+                                <option value="INSTALL">INSTALL</option>
+                                <option value="Onsite-Free">Onsite-Free</option>
+                                <option value="Onsite-Charge">Onsite-Charge</option>
+                                <option value="Onsite-Survey">Onsite-Survey</option>
+                                <option value="PROJECT">PROJECT</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase">วันที่</label>
+                            <input type="date" id="workDate" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase">ชื่อบริษัท/โปรเจค</label>
+                            <input type="text" id="companyName" required placeholder="ระบุชื่อบริษัท" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        </div>
+                    </div>
+                    <div id="input-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 p-6 rounded-2xl border-2 border-dashed"></div>
+                    <button type="submit" id="submitBtn" class="w-full py-5 bg-blue-600 text-white rounded-2xl font-bold text-xl shadow-lg hover:bg-blue-700 transition transform active:scale-95">บันทึกข้อมูล</button>
+                </form>
+            </div>
+
+            <div id="page-settings" class="page-content hidden max-w-xl mx-auto">
+                <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-100">
+                    <h3 class="text-xl font-bold mb-2 text-slate-800 border-l-4 border-blue-500 pl-3">ตั้งค่าหัวข้ออุปกรณ์</h3>
+                    <p class="text-xs text-slate-400 mb-6 italic">* แก้ไขชื่อ หรือ ลำดับได้อิสระ</p>
+                    <div id="settings-list" class="space-y-2 mb-6"></div>
+                    <div class="flex gap-2 mb-6">
+                        <input type="text" id="newHeader" placeholder="ชื่อหัวข้อใหม่" class="flex-1 p-3 border rounded-xl outline-none">
+                        <button onclick="addHeader()" class="bg-blue-600 text-white px-6 rounded-xl font-bold hover:bg-blue-700">เพิ่ม</button>
+                    </div>
+                    <button onclick="saveSettings()" class="w-full py-4 bg-slate-900 text-white rounded-xl font-bold">บันทึกทั้งหมด</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="detail-modal" class="fixed inset-0 modal-overlay z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b flex justify-between items-center bg-slate-50 rounded-t-3xl">
+                <h3 id="modal-title" class="text-xl font-bold text-slate-800">รายละเอียด</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6">
+                <div id="modal-device-summary" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                <div class="bg-white border rounded-2xl overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="p-3 text-left">วันที่</th>
+                                <th class="p-3 text-left">บริษัท/โปรเจค</th>
+                                <th class="p-3 text-right">รวมอุปกรณ์</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-list" class="divide-y"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script type="module">
+        // 1. เพิ่ม getAuth และ signIn... เข้ามาใน Import
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, updateDoc, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzj1S-wSo5cJttti06DI74PU1sUJnVnSw",
+            authDomain: "onsite-service-52620.firebaseapp.com",
+            projectId: "onsite-service-52620",
+            storageBucket: "onsite-service-52620.firebasestorage.app",
+            messagingSenderId: "679087714606",
+            appId: "1:679087714606:web:055607d9d12f14ecdd8abf",
+            measurementId: "G-MCV5Z6E9MW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app); // 2. แก้เป็น getAuth(app)
+         let currentFilter = 'month';
+        let deviceHeaders = [];
+
+        // --- AUTH SYSTEM ---
+        onAuthStateChanged(auth, async (user) => { // 3. แก้เป็น onAuthStateChanged(auth, ...)
+            const loginScreen = document.getElementById('login-screen');
+            // ในไฟล์คุณไม่มี id="main-app" ดังนั้นเราจะคุมแค่การซ่อนหน้า Login
+            if (user) {
+                console.log("Logged in as:", user.email);
+                loginScreen.classList.add('hidden');
+                await fetchHeaders();
+                showPage('dashboard');
+            } else {
+                loginScreen.classList.remove('hidden');
+            }
+        });
+
+        // 4. ทำให้ฟังก์ชันเรียกใช้จากปุ่มใน HTML ได้ (ใช้ window.)
+        window.handleLogin = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const btn = document.getElementById('btnLogin');
+            const errorMsg = document.getElementById('login-error');
+            
+            btn.innerHTML = 'กำลังตรวจสอบ...';
+            btn.disabled = true;
+            errorMsg.classList.add('hidden');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (e) {
+                console.error(e);
+                errorMsg.innerText = "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+                errorMsg.classList.remove('hidden');
+                btn.innerHTML = 'เข้าสู่ระบบ';
+                btn.disabled = false;
+            }
+        };
+
+        window.handleLogout = () => { 
+            if(confirm("ต้องการออกจากระบบ?")) signOut(auth); 
+        };
+
+async function fetchHeaders() {
+    try {
+        const docSnap = await getDoc(doc(db, "settings", "device_headers"));
+        if (docSnap.exists()) {
+            deviceHeaders = docSnap.data().headers;
+        } else {
+            // ค่าเริ่มต้นกรณีไม่มีข้อมูลใน DB
+            deviceHeaders = [
+                { id: "col_0", name: "ACCESS Control" },
+                { id: "col_1", name: "TIME" }
+            ];
+            // บันทึกค่าเริ่มต้นลง DB ทันที
+            await setDoc(doc(db, "settings", "device_headers"), { headers: deviceHeaders });
+        }
+    } catch (e) {
+        console.error("Error fetching headers:", e);
+    }
+}
+
+        let globalData = [];
+        let jobChartInstance = null, deviceChartInstance = null, trendChartInstance = null;
+
+        // --- Core Functions ---
+        window.showPage = (pageId) => {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+            document.getElementById('page-' + pageId).classList.remove('hidden');
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('sidebar-item-active'));
+            document.getElementById('btn-' + pageId).classList.add('sidebar-item-active');
+            if(pageId === 'dashboard' || pageId === 'charts') refreshData();
+            if(pageId === 'input' && !document.getElementById('edit-doc-id').value) renderInputFields();
+            if(pageId === 'settings') renderSettingsFields();
+        };
+
+        window.setFilterType = (type) => {
+            currentFilter = type;
+            document.getElementById('range-inputs').classList.toggle('hidden', type !== 'month');
+            refreshData();
+        };
+
+      window.refreshData = async () => {
+        await fetchHeaders();
+        let start, end;
+        const now = new Date();
+        if (currentFilter === 'day') { start = now.toISOString().split('T')[0]; end = start; }
+        else if (currentFilter === 'year') { start = `${now.getFullYear()}-01-01`; end = `${now.getFullYear()}-12-31`; }
+        else {
+            start = document.getElementById('start-date').value || `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+            end = document.getElementById('end-date').value || now.toISOString().split('T')[0];
+        }
+
+        const q = query(collection(db, "service_tiger"), where("workDate", ">=", start), where("workDate", "<=", end), orderBy("workDate", "desc"));
+        const snap = await getDocs(q);
+        globalData = [];
+        const stats = { INSTALL: 0, 'Onsite-Free': 0, 'Onsite-Charge': 0, 'Onsite-Survey': 0, 'PROJECT': 0 };
+        
+        // แยกตัวแปรเก็บยอดรวมอุปกรณ์: ทั่วไป กับ ของโปรเจค
+        const totals = {}; 
+        deviceHeaders.forEach(h => totals[h.id] = 0);
+        
+        const hrow = document.getElementById('head-row');
+        hrow.innerHTML = `<th class="p-4">วันที่</th><th class="p-4">ประเภท</th><th class="p-4">บริษัท/โปรเจค</th>` + 
+                         deviceHeaders.map(h => `<th class="p-4 text-center font-bold text-xs">${h.name}</th>`).join('');
+
+        const tbody = document.getElementById('data-body');
+        tbody.innerHTML = "";
+        
+        snap.forEach(docSnap => {
+            const d = docSnap.data();
+            d.docId = docSnap.id;
+            globalData.push(d);
+            if(stats.hasOwnProperty(d.jobType)) stats[d.jobType]++;
+            
+            let row = `<tr onclick="editRecord('${d.docId}')" class="hover-edit">
+                <td class="p-4 text-xs font-mono">${d.workDate}</td>
+                <td class="p-4 font-bold text-xs">${d.jobType}</td>
+                <td class="p-4 font-bold text-slate-700">
+                    ${d.companyName}
+                    ${d.imageUrl ? '<i class="fas fa-image text-blue-500 ml-2" title="มีรูปภาพ"></i>' : ''}
+                </td>`;
+            
+            deviceHeaders.forEach(h => {
+                const v = d.devices[h.id] || 0;
+                
+                // แก้ไข logic ตรงนี้: ถ้าไม่ใช่ PROJECT ให้นับรวมในยอดรวมหลัก (Dashboard)
+                if (d.jobType !== 'PROJECT') {
+                    totals[h.id] += v;
+                }
+                
+                // แต่ในตาราง (Table) ให้แสดงตัวเลขของทุกประเภทงานรวมถึง Project ด้วย
+                row += `<td class="p-4 text-center ${v > 0 ? (d.jobType === 'PROJECT' ? 'bg-amber-50 text-amber-600 font-bold' : 'bg-blue-50 font-bold text-blue-600') : 'text-slate-300'}">${v}</td>`;
+            });
+            tbody.innerHTML += row + `</tr>`;
+        });
+
+        document.getElementById('sum-install').innerText = stats.INSTALL;
+        document.getElementById('sum-free').innerText = stats['Onsite-Free'];
+        document.getElementById('sum-charge').innerText = stats['Onsite-Charge'];
+        document.getElementById('sum-survey').innerText = stats['Onsite-Survey'];
+        document.getElementById('sum-project').innerText = stats['PROJECT'];
+
+        // ยอดรวมด้านบนจะโชว์เฉพาะงานที่ไม่ใช่ PROJECT
+        document.getElementById('device-totals').innerHTML = deviceHeaders.map(h => `
+            <div class="bg-blue-800/40 p-3 rounded-2xl border border-white/5">
+                <p class="text-[9px] text-blue-300 font-bold uppercase truncate">${h.name}</p>
+                <p class="text-xl font-bold">${totals[h.id]}</p>
+            </div>
+        `).join('');
+
+        if (!document.getElementById('page-charts').classList.contains('hidden')) updateCharts(stats, totals);
+    };
+
+        // --- Export & Import ---
+        window.processExport = (dataToExport, fileName) => {
+            if (!dataToExport || dataToExport.length === 0) { alert("ไม่มีข้อมูล"); return; }
+            const headers = ["วันที่", "ประเภทงาน", "บริษัท/โปรเจค", ...deviceHeaders.map(h => h.name)];
+            const rows = dataToExport.map(d => [
+                d.workDate, d.jobType, d.companyName,
+                ...deviceHeaders.map(h => d.devices[h.id] || 0)
+            ]);
+            const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Service");
+            XLSX.writeFile(wb, `${fileName}_${new Date().toISOString().split('T')[0]}.xlsx`);
+        };
+
+        window.exportAll = () => processExport(globalData, "All_Report");
+        window.exportByType = (type) => processExport(globalData.filter(d => d.jobType === type), `Report_${type}`);
+
+        const formatExcelDate = (val) => {
+            if (!val) return new Date().toISOString().split('T')[0];
+            let date;
+            if (typeof val === 'number') { date = new Date((val - 25569) * 86400 * 1000); } 
+            else { date = new Date(val); }
+            if (isNaN(date.getTime())) return new Date().toISOString().split('T')[0];
+            return date.toISOString().split('T')[0];
+        };
+
+       window.handleImport = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            
+            if (confirm(`พบข้อมูล ${jsonData.length} รายการ ระบบจะอัปเดตข้อมูลเดิมที่ตรงกัน หรือเพิ่มใหม่หากไม่พบข้อมูล ยืนยันหรือไม่?`)) {
+                let addCount = 0;
+                let updateCount = 0;
+
+                for (const row of jsonData) {
+                    const workDate = formatExcelDate(row.วันที่ || row.workDate);
+                    const jobType = String(row.ประเภทงาน || row.jobType || 'INSTALL').trim();
+                    const companyName = String(row.ชื่อบริษัท || row.companyName || row["บริษัท/โปรเจค"] || 'ไม่ระบุ').trim();
+
+                    // 1. ค้นหาข้อมูลเดิมใน Database ที่มี วันที่, ประเภท, และชื่อบริษัท ตรงกัน
+                    const q = query(
+                        collection(db, "service_tiger"),
+                        where("workDate", "==", workDate),
+                        where("jobType", "==", jobType),
+                        where("companyName", "==", companyName)
+                    );
+                    const querySnapshot = await getDocs(q);
+
+                    const devices = {};
+                    deviceHeaders.forEach(h => {
+                        devices[h.id] = parseInt(row[h.name]) || 0;
+                    });
+
+                    const payload = {
+                        workDate,
+                        jobType,
+                        companyName,
+                        devices,
+                        lastUpdated: new Date() // เก็บเวลาที่อัปเดตล่าสุด
+                    };
+
+                    if (!querySnapshot.empty) {
+                        // 2. ถ้าเจอข้อมูลเดิม -> ให้ Update (ป้องกันข้อมูลซ้ำ)
+                        const docId = querySnapshot.docs[0].id;
+                        await updateDoc(doc(db, "service_tiger", docId), payload);
+                        updateCount++;
+                    } else {
+                        // 3. ถ้าไม่เจอข้อมูลเดิม -> ให้ Add New
+                        payload.createdAt = new Date();
+                        await addDoc(collection(db, "service_tiger"), payload);
+                        addCount++;
+                    }
+                }
+                alert(`นำเข้าเรียบร้อย!\n- อัปเดตข้อมูลเดิม: ${updateCount} รายการ\n- เพิ่มข้อมูลใหม่: ${addCount} รายการ`);
+                setFilterType('year');
+                refreshData();
+            }
+        } catch(e) { 
+            console.error(e); 
+            alert("เกิดข้อผิดพลาดในการ Import: " + e.message); 
+        }
+    };
+    reader.readAsArrayBuffer(file);
+};
+
+        // --- Charts Section (NEW & PRO STYLE) ---
+        window.updateCharts = (stats, totals) => {
+            // Colors for 5 Main Topics
+            const colors = {
+                'INSTALL': { main: '#3b82f6', bg: 'rgba(59, 130, 246, 0.2)' },
+                'Onsite-Free': { main: '#10b981', bg: 'rgba(16, 185, 129, 0.2)' },
+                'Onsite-Charge': { main: '#f59e0b', bg: 'rgba(245, 158, 11, 0.2)' },
+                'Onsite-Survey': { main: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.2)' },
+                'PROJECT': { main: '#64748b', bg: 'rgba(100, 116, 139, 0.2)' }
+            };
+
+            // 1. Trend Chart (Area)
+            const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            const trendData = { 'INSTALL': Array(12).fill(0), 'Onsite-Free': Array(12).fill(0), 'Onsite-Charge': Array(12).fill(0), 'Onsite-Survey': Array(12).fill(0), 'PROJECT': Array(12).fill(0) };
+            
+            globalData.forEach(d => {
+                const date = new Date(d.workDate);
+                const type = d.jobType.trim();
+                if(trendData[type]) trendData[type][date.getMonth()]++;
+            });
+
+            if(trendChartInstance) trendChartInstance.destroy();
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            const createDs = (key) => {
+                const c = colors[key] || colors['PROJECT'];
+                const grad = trendCtx.createLinearGradient(0,0,0,400);
+                grad.addColorStop(0, c.main); grad.addColorStop(1, 'rgba(255,255,255,0)');
+                return { label: key, data: trendData[key], borderColor: c.main, backgroundColor: grad, fill: true, tension: 0.4, borderWidth: 2 };
+            };
+            
+            trendChartInstance = new Chart(trendCtx, {
+                type: 'line',
+                data: { labels: months, datasets: Object.keys(trendData).map(k => createDs(k)) },
+                options: {
+                    maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { position: 'top', align: 'end', labels: { usePointStyle: true, font: { family: 'Sarabun' } } } },
+                    scales: { y: { beginAtZero: true, grid: { borderDash: [2,4] } }, x: { grid: { display: false } } }
+                }
+            });
+
+         
+        // 2. Doughnut Chart (ปรับปรุงให้มีมิติ)
+if(jobChartInstance) jobChartInstance.destroy();
+jobChartInstance = new Chart(document.getElementById('jobChart'), {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(stats),
+        datasets: [{
+            data: Object.values(stats),
+            backgroundColor: Object.values(colors).map(c => c.main),
+            hoverBackgroundColor: Object.values(colors).map(c => c.main), // สีตอนเอาเมาส์ชี้
+            borderWidth: 5, // เพิ่มขอบสีขาวระหว่างชิ้นส่วนให้ดูมีมิติ
+            borderColor: '#ffffff',
+            hoverOffset: 15, // ทำให้ชิ้นส่วนกระเด้งออกมาเมื่อชี้
+            borderRadius: 10 // ทำให้ขอบมนดูทันสมัย
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        cutout: '70%', // ทำให้รูตรงกลางกว้างขึ้น ดูเป็นวงแหวนที่สวยงาม
+        plugins: {
+            legend: {
+                position: 'right',
+                labels: {
+                    usePointStyle: true,
+                    padding: 20,
+                    font: { family: 'Sarabun', size: 12, weight: 'bold' }
+                }
+            },
+            title: {
+                display: true,
+                text: ' 📊 สัดส่วนงานสะสม',
+                align: 'start',
+                padding: { bottom: 30 },
+                font: { size: 18, family: 'Sarabun', weight: 'bold' }
+            }
+        },
+        animation: {
+            animateScale: true, // กราฟจะค่อยๆ ขยายออกมาจากจุดศูนย์กลาง
+            animateRotate: true, // กราฟจะหมุนวนตอนโหลด
+            duration: 2000, // ความเร็วแอนิเมชัน (2 วินาที)
+            easing: 'easeOutBounce' // แอนิเมชันแบบเด้งนิดๆ ดูมีชีวิตชีวา
+        }
+    }
+});
+
+            // 3. Bar Chart
+            if(deviceChartInstance) deviceChartInstance.destroy();
+            const devCtx = document.getElementById('deviceChart').getContext('2d');
+            const barGrad = devCtx.createLinearGradient(0, 0, 0, 400);
+            barGrad.addColorStop(0, '#3b82f6'); barGrad.addColorStop(1, '#93c5fd');
+
+            deviceChartInstance = new Chart(devCtx, {
+                type: 'bar',
+                data: { labels: deviceHeaders.map(h => h.name), datasets: [{ label: 'จำนวน', data: deviceHeaders.map(h => totals[h.id]), backgroundColor: barGrad, borderRadius: 6 }] },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, title: { display: true, text: '📦ยอดรวมอุปกรณ์', align: 'start', font: { size: 16, family: 'Sarabun' } } },
+                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+                }
+            });
+        };
+
+        // --- Settings Section ---
+        function renderSettingsFields() {
+            document.getElementById('settings-list').innerHTML = deviceHeaders.map((h, i) => `
+                <div class="flex gap-2 items-center bg-slate-50 p-2 rounded-xl">
+                    <input type="text" value="${h.name}" class="set-in flex-1 bg-transparent font-bold pl-2" data-id="${h.id}">
+                    <div class="flex flex-col gap-0.5">
+                        <button type="button" onclick="moveHeader(${i}, -1)" class="text-[10px] bg-white border rounded px-1.5 py-0.5 hover:bg-blue-50">▲</button>
+                        <button type="button" onclick="moveHeader(${i}, 1)" class="text-[10px] bg-white border rounded px-1.5 py-0.5 hover:bg-blue-50">▼</button>
+                    </div>
+                    <button onclick="deleteH(${i})" class="text-red-400 px-2 ml-1"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        window.moveHeader = (idx, dir) => {
+            const target = idx + dir;
+            if (target >= 0 && target < deviceHeaders.length) {
+                [deviceHeaders[idx], deviceHeaders[target]] = [deviceHeaders[target], deviceHeaders[idx]];
+                renderSettingsFields();
+            }
+        };
+
+        window.addHeader = () => {
+            const val = document.getElementById('newHeader').value;
+            if(val) {
+                deviceHeaders.push({ id: "col_" + Date.now(), name: val });
+                renderSettingsFields(); document.getElementById('newHeader').value = "";
+            }
+        };
+
+        window.deleteH = (i) => { if(confirm("ลบ?")) { deviceHeaders.splice(i, 1); renderSettingsFields(); } };
+
+window.saveSettings = async () => {
+    // ดึงค่าจากหน้าจอ
+    const updatedHeaders = Array.from(document.querySelectorAll('.set-in')).map(i => ({ 
+        id: i.dataset.id, 
+        name: i.value 
+    }));
+
+    try {
+        // บันทึกลง Firestore (Collection: settings, Doc: device_headers)
+        await setDoc(doc(db, "settings", "device_headers"), { 
+            headers: updatedHeaders,
+            lastUpdated: new Date()
+        });
+        
+        alert("บันทึกลงฐานข้อมูล Cloud เรียบร้อยแล้ว");
+        location.reload(); // โหลดหน้าใหม่เพื่อให้ทุกส่วนใช้หัวข้อล่าสุด
+    } catch (e) {
+        alert("เกิดข้อผิดพลาด: " + e.message);
+    }
+};
+
+        // --- Record Management ---
+        function renderInputFields(values = {}) {
+            document.getElementById('input-grid').innerHTML = deviceHeaders.map(h => `
+                <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">${h.name}</label>
+                    <input type="number" data-id="${h.id}" value="${values[h.id] || 0}" min="0" class="qty-in w-full p-1 bg-transparent font-bold text-blue-600 outline-none">
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('serviceForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('edit-doc-id').value;
+            const devs = {}; document.querySelectorAll('.qty-in').forEach(i => devs[i.dataset.id] = parseInt(i.value) || 0);
+            const data = {
+                jobType: document.getElementById('jobType').value,
+                workDate: document.getElementById('workDate').value,
+                companyName: document.getElementById('companyName').value,
+                devices: devs
+            };
+            editId ? await updateDoc(doc(db, "service_tiger", editId), data) : await addDoc(collection(db, "service_tiger"), {...data, createdAt: new Date()});
+            alert("สำเร็จ"); cancelEdit(); showPage('dashboard');
+        };
+
+        window.editRecord = (id) => {
+            const r = globalData.find(d => d.docId === id);
+            document.getElementById('edit-doc-id').value = id;
+            document.getElementById('jobType').value = r.jobType;
+            document.getElementById('workDate').value = r.workDate;
+            document.getElementById('companyName').value = r.companyName;
+            document.getElementById('submitBtn').innerText = "อัปเดตข้อมูล";
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+            document.getElementById('btn-delete').classList.remove('hidden');
+            renderInputFields(r.devices); showPage('input');
+        };
+
+        window.cancelEdit = () => {
+            document.getElementById('edit-doc-id').value = ""; document.getElementById('serviceForm').reset();
+            document.getElementById('submitBtn').innerText = "บันทึกข้อมูล";
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
+            document.getElementById('btn-delete').classList.add('hidden');
+            renderInputFields();
+        };
+
+        window.deleteRecord = async () => {
+            const id = document.getElementById('edit-doc-id').value;
+            if(id && confirm("ลบถาวร?")) { await deleteDoc(doc(db, "service_tiger", id)); cancelEdit(); showPage('dashboard'); }
+        };
+
+        window.openDetailModal = (type) => {
+        const filtered = globalData.filter(d => d.jobType === type);
+        const modalSum = {}; deviceHeaders.forEach(h => modalSum[h.id] = 0);
+        document.getElementById('modal-title').innerText = "รายละเอียด: " + type;
+        document.getElementById('modal-list').innerHTML = filtered.map(d => {
+            const total = Object.values(d.devices).reduce((a, b) => a + b, 0);
+            deviceHeaders.forEach(h => modalSum[h.id] += (d.devices[h.id] || 0));
+            return `<tr>
+                <td class="p-3">${d.workDate}</td>
+                <td class="p-3 font-bold">${d.companyName}</td>
+                <td class="p-3 text-right font-bold text-blue-600">${total}</td>
+                <td class="p-3 text-center">
+                    ${d.imageUrl ? `<a href="${d.imageUrl}" target="_blank"><img src="${d.imageUrl}" class="w-8 h-8 rounded object-cover border inline-block hover:scale-150 transition"></a>` : '-'}
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="4" class="p-8 text-center text-slate-400">ไม่มีข้อมูล</td></tr>';
+        
+        document.getElementById('modal-device-summary').innerHTML = deviceHeaders.map(h => `
+            <div class="bg-slate-50 p-3 rounded-xl border">
+                <p class="text-[10px] text-slate-500 font-bold">${h.name}</p>
+                <p class="text-lg font-bold ${modalSum[h.id]>0 ? (type === 'PROJECT' ? 'text-amber-600' : 'text-blue-600') : 'text-slate-300'}">${modalSum[h.id]}</p>
+            </div>
+        `).join('');
+        document.getElementById('detail-modal').classList.remove('hidden');
+    };
+window.closeModal = () => document.getElementById('detail-modal').classList.add('hidden');
+
+    </script>
+</body>
+</html>
