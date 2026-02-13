@@ -326,11 +326,11 @@
             <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
               <div>
                 <h3 class="text-sm font-extrabold text-slate-900">
-                  <i class="fas fa-microchip text-blue-600 mr-2"></i>สรุปอุปกรณ์ (เฉพาะงานที่ไม่ใช่ PROJECT)
+                  <i class="fas fa-microchip text-blue-600 mr-2"></i>List of installed equipment
                 </h3>
-                <p class="text-[11px] text-slate-500 font-bold mt-1">แสดงยอดรวมตามหัวข้ออุปกรณ์ในช่วงเวลาที่เลือก</p>
+                <p class="text-[11px] text-slate-500 font-bold mt-1"></p>
               </div>
-              <span class="chip"><i class="fa-solid fa-filter"></i>Exclude Project</span>
+              <span class="chip hidden"><i class="fa-solid fa-filter"></i>Exclude Project</span>
             </div>
             <div class="p-5">
               <div id="device-totals" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-7 gap-3"></div>
@@ -342,7 +342,7 @@
             <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-list-check text-blue-600 mr-2"></i>รายการงาน (ล่าสุดก่อน)</h3>
-                <p class="text-[11px] text-slate-500 font-bold mt-1">คลิกแถวเพื่อดูรายละเอียด (ต้องเข้าสู่ระบบเพื่อแก้ไข) / กดตัวเลข KPI เพื่อดูรายละเอียดแบบสรุป</p>
+                <p class="hidden""text-[11px] text-slate-500 font-bold mt-1">คลิกแถวเพื่อดูรายละเอียด (ต้องเข้าสู่ระบบเพื่อแก้ไข) / กดตัวเลข KPI เพื่อดูรายละเอียดแบบสรุป</p>
               </div>
 
               <div class="flex items-center gap-2">
@@ -369,17 +369,8 @@
 
         <!-- ANALYTICS PAGE -->
         <section id="page-charts" class="page-content hidden space-y-6 fade-up">
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-chart-line text-blue-600 mr-2"></i>Analytics</h3>
-                <p class="text-[11px] text-slate-500 font-bold mt-1"></p>
-              </div>
-              <span class="chip"><i class="fa-solid fa-wand-magic-sparkles"></i>Pro Charts</span>
-            </div>
-            <div id="charts-slot-charts" class="p-5"></div>
-          </div>
-        </section>
+  <div id="charts-slot-charts"></div>
+</section>
 
         <!-- INPUT PAGE -->
         <section id="page-input" class="page-content hidden max-w-4xl mx-auto fade-up">
@@ -496,32 +487,63 @@
 
   <!-- CHARTS BLOCK (single instance; moved between dashboard & analytics page) -->
   <div id="charts-block" class="space-y-6">
-    <!-- Summary charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <!-- Canvas pool (avoid duplicate IDs; canvases are moved into layout slots) -->
+    <div id="charts-canvas-pool" class="hidden">
+      <canvas id="trendChart"></canvas>
+      <canvas id="jobChart"></canvas>
+    </div>
+
+    <!-- Dashboard layout (เหมือนรูปเดิม) -->
+    <div class="charts-dashboard grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-chart-area text-blue-600 mr-2"></i>Trend รายเดือน</h3>
-            <p class="text-[11px] text-slate-500 font-bold mt-1">จำนวนงานในแต่ละเดือน (แยกตามประเภท)</p>
+            <p class="text-[11px] text-slate-500 font-bold mt-1"></p>
           </div>
           <span class="chip"><i class="fa-regular fa-clock"></i>Monthly</span>
         </div>
-        <div class="p-5 h-[360px]">
-          <canvas id="trendChart"></canvas>
-        </div>
+        <div class="p-5 h-[360px]" id="slot-trend-dashboard"></div>
       </div>
 
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
-            <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-chart-pie text-blue-600 mr-2"></i>Work Mix</h3>
-            <p class="text-[11px] text-slate-500 font-bold mt-1">สัดส่วนงานในช่วงเวลาที่เลือก</p>
+            <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-chart-pie text-red-600 mr-2"></i>Services</h3>
+            <p class="text-[11px] text-slate-500 font-bold mt-1"></p>
           </div>
-          <span class="chip"><i class="fa-solid fa-ring"></i>Mix</span>
+          <span class="chip hidden"><i class="fa-solid fa-ring"></i>Mix</span>
         </div>
-        <div class="p-5 h-[360px]">
-          <canvas id="jobChart"></canvas>
+        <div class="p-5 h-[360px]" id="slot-job-dashboard"></div>
+      </div>
+    </div>
+
+    <!-- Analytics layout (ให้เหมือนรูปตัวอย่างที่ 2: โดนัท + กราฟแท่งรายเดือน) -->
+    <div class="charts-analytics hidden space-y-6">
+      <!-- All Service -->
+      <div class="flex justify-center">
+        <div class="w-full max-w-3xl bg-white rounded-[2rem] border border-slate-200 shadow-soft p-6 md:p-8">
+          <div class="text-center">
+            <h3 class="text-xl font-extrabold text-slate-900">All Service</h3>
+            <p class="hidden""text-[12px] text-slate-500 font-bold mt-1">สัดส่วนประเภทงานทั้งหมด (แสดง % รอบวง)</p>
+          </div>
+          <div class="mt-4 relative mx-auto w-full max-w-[560px] h-[340px]" id="slot-job-analytics"></div>
         </div>
+      </div>
+
+      <!-- Service Month -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-screwdriver-wrench text-blue-600"></i>
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-900">Service Month</h3>
+              <p class="hidden""text-[11px] text-slate-500 font-bold mt-1">จำนวนงานรายเดือน (แยกตามประเภท)</p>
+            </div>
+          </div>
+          <span class="chip"><i class="fa-solid fa-chart-column"></i>Bar</span>
+        </div>
+        <div class="p-5 h-[380px]" id="slot-trend-analytics"></div>
       </div>
     </div>
 
@@ -532,7 +554,7 @@
           <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
             <div>
               <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-boxes-stacked text-blue-600 mr-2"></i>ยอดรวมอุปกรณ์</h3>
-              <p class="text-[11px] text-slate-500 font-bold mt-1">รวมจำนวนอุปกรณ์ตามหัวข้อ (Exclude Project)</p>
+              <p class="hidden""text-[11px] text-slate-500 font-bold mt-1">รวมจำนวนอุปกรณ์ตามหัวข้อ (Exclude Project)</p>
             </div>
             <span class="chip"><i class="fa-solid fa-microchip"></i>Devices</span>
           </div>
@@ -545,7 +567,7 @@
           <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
             <div>
               <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-building text-blue-600 mr-2"></i>Top บริษัท/โปรเจค</h3>
-              <p class="text-[11px] text-slate-500 font-bold mt-1">Top 10 ตามจำนวนงาน</p>
+              <p id="top-company-subtitle" class="text-[11px] text-slate-500 font-bold mt-1">Top 10 ตามจำนวนอุปกรณ์รวม (เฉพาะ Project) • ทั้งปี</p>
             </div>
             <span class="chip"><i class="fa-solid fa-ranking-star"></i>Top 10</span>
           </div>
@@ -643,6 +665,35 @@
   let deviceHeaders = [];
   let globalData = [];
 
+
+  // ---- Year data cache (for charts that must show whole year) ----
+  const yearDataCache = new Map();
+  async function getYearData(year) {
+    const y = Number(year);
+    if (!y || Number.isNaN(y)) return [];
+    if (yearDataCache.has(y)) return yearDataCache.get(y);
+
+    const yStart = `${y}-01-01`;
+    const yEnd = `${y}-12-31`;
+    try {
+      const qy = query(
+        collection(db, "service_tiger"),
+        where("workDate", ">=", yStart),
+        where("workDate", "<=", yEnd),
+        orderBy("workDate", "desc")
+      );
+      const snap = await getDocs(qy);
+      const arr = [];
+      snap.forEach(ds => arr.push(ds.data()));
+      yearDataCache.set(y, arr);
+      return arr;
+    } catch (e) {
+      console.warn("getYearData failed:", e);
+      yearDataCache.set(y, []);
+      return [];
+    }
+  }
+
   // Chart instances
   let charts = {
     trend: null,
@@ -723,6 +774,37 @@
     if (btn) btn.classList.add('bg-slate-900', 'text-white');
   };
 
+  const setChartsViewMode = (mode) => {
+    const block = document.getElementById('charts-block');
+    if (!block) return;
+
+    const dashWrap = block.querySelector('.charts-dashboard');
+    const anaWrap  = block.querySelector('.charts-analytics');
+
+    const trendCanvas = document.getElementById('trendChart');
+    const jobCanvas   = document.getElementById('jobChart');
+
+    const setHidden = (el, hide) => { if (el) el.classList.toggle('hidden', hide); };
+
+    if (mode === 'dashboard') {
+      setHidden(dashWrap, false);
+      setHidden(anaWrap, true);
+
+      const slotTrend = document.getElementById('slot-trend-dashboard');
+      const slotJob   = document.getElementById('slot-job-dashboard');
+      if (slotTrend && trendCanvas) slotTrend.appendChild(trendCanvas);
+      if (slotJob && jobCanvas) slotJob.appendChild(jobCanvas);
+    } else {
+      setHidden(dashWrap, true);
+      setHidden(anaWrap, false);
+
+      const slotTrend = document.getElementById('slot-trend-analytics');
+      const slotJob   = document.getElementById('slot-job-analytics');
+      if (slotTrend && trendCanvas) slotTrend.appendChild(trendCanvas);
+      if (slotJob && jobCanvas) slotJob.appendChild(jobCanvas);
+    }
+  };
+
   const moveChartsBlock = (pageId) => {
     const block = document.getElementById('charts-block');
     if (!block) return;
@@ -731,10 +813,12 @@
       document.getElementById('charts-slot-dashboard').appendChild(block);
       block.dataset.mode = 'dashboard';
       block.querySelectorAll('.charts-full').forEach(el => el.classList.add('hidden'));
+      setChartsViewMode('dashboard');
     } else if (pageId === 'charts') {
       document.getElementById('charts-slot-charts').appendChild(block);
       block.dataset.mode = 'full';
       block.querySelectorAll('.charts-full').forEach(el => el.classList.remove('hidden'));
+      setChartsViewMode('full');
     }
   };
 
@@ -828,6 +912,9 @@
       const snap = await getDocs(q);
 
       globalData = [];
+      // clear whole-year cache so Top บริษัท/โปรเจค stays consistent with latest data
+      try { yearDataCache.clear(); } catch (e) {}
+
       const stats = { INSTALL: 0, 'Onsite-Free': 0, 'Onsite-Charge': 0, 'Onsite-Survey': 0, 'PROJECT': 0 };
 
       const totals = {};
@@ -888,7 +975,7 @@
       bindSearch();
 
       // charts update (if block is mounted)
-      updateCharts(stats, totals);
+      await updateCharts(stats, totals, { start, end });
 
     } catch (e) {
       console.error(e);
@@ -1087,175 +1174,515 @@
     'PROJECT': '#0f172a'
   };
 
+  const JOB_ORDER = ['INSTALL', 'Onsite-Free', 'Onsite-Charge', 'Onsite-Survey', 'PROJECT'];
+  const MONTHS_TH = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  const getChartsMode = () => (document.getElementById('charts-block')?.dataset?.mode || 'dashboard');
+  const isAnalyticsMode = () => getChartsMode() === 'full';
+  const displayJobLabel = (key) => key;
+
   const centerTextPlugin = {
     id: 'centerTextPlugin',
-    afterDraw(chart, args, pluginOptions) {
+    beforeDraw(chart, args, pluginOptions) {
       if (chart.config.type !== 'doughnut') return;
-      const { ctx } = chart;
+
       const meta = chart.getDatasetMeta(0);
       if (!meta || !meta.data || !meta.data[0]) return;
-      const x = meta.data[0].x;
-      const y = meta.data[0].y;
-      const total = (chart.data.datasets[0].data || []).reduce((a,b)=>a + (Number(b)||0), 0);
+
+      const { ctx } = chart;
+      const arc0 = meta.data[0];
+      const x = arc0.x;
+      const y = arc0.y;
+
+      const total = (chart.data.datasets[0].data || []).reduce((a, b) => a + (Number(b) || 0), 0);
+      const variant = pluginOptions?.variant || 'default';
+
       ctx.save();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
+
+      if (variant === 'analytics') {
+        const innerR = arc0.innerRadius || 0;
+        const fill = pluginOptions?.centerFill || '#0f172a';
+
+        // center disk
+        ctx.beginPath();
+        ctx.arc(x, y, Math.max(0, innerR - 6), 0, Math.PI * 2);
+        ctx.fillStyle = fill;
+        ctx.fill();
+
+        // text
+        ctx.fillStyle = pluginOptions?.valueColor || '#ffffff';
+        ctx.font = `800 ${pluginOptions?.valueSize || 28}px Sarabun`;
+        ctx.fillText(String(total || 0), x, y - 2);
+
+        ctx.fillStyle = pluginOptions?.labelColor || '#e2e8f0';
+        ctx.font = `800 ${pluginOptions?.labelSize || 12}px Sarabun`;
+        ctx.fillText(pluginOptions?.label || 'Work', x, y + 22);
+
+        ctx.restore();
+        return;
+      }
+
+      // default (dashboard)
       ctx.fillStyle = '#0f172a';
       ctx.font = '700 22px Sarabun';
       ctx.fillText(String(total || 0), x, y - 6);
       ctx.fillStyle = '#64748b';
       ctx.font = '700 12px Sarabun';
-      ctx.fillText('งานทั้งหมด', x, y + 16);
+      ctx.fillText('Total', x, y + 16);
       ctx.restore();
     }
   };
 
-  window.updateCharts = (stats, totals) => {
-    // trend (monthly)
-    const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-    const trendData = { 'INSTALL': Array(12).fill(0), 'Onsite-Free': Array(12).fill(0), 'Onsite-Charge': Array(12).fill(0), 'Onsite-Survey': Array(12).fill(0), 'PROJECT': Array(12).fill(0) };
+  const percentCalloutsPlugin = {
+    id: 'percentCalloutsPlugin',
+    afterDatasetsDraw(chart, args, pluginOptions) {
+      if (chart.config.type !== 'doughnut') return;
+      if (pluginOptions && pluginOptions.enabled === false) return;
 
-    globalData.forEach(d => {
-      const type = (d.jobType || '').trim();
-      const mStr = String(d.workDate || '').slice(5, 7);
-      const monthIdx = parseInt(mStr, 10) - 1;
-      if (trendData[type] && monthIdx >= 0 && monthIdx < 12) trendData[type][monthIdx]++;
-    });
+      const ds = chart.data.datasets?.[0];
+      const data = (ds?.data || []).map(v => Number(v) || 0);
+      const total = data.reduce((a, b) => a + b, 0);
+      if (!total) return;
 
-    // destroy if canvas not visible? We'll just recreate safely.
-    const trendEl = document.getElementById('trendChart');
-    if (trendEl) {
-      if (charts.trend) charts.trend.destroy();
-      const ctx = trendEl.getContext('2d');
+      const meta = chart.getDatasetMeta(0);
+      if (!meta?.data?.length) return;
 
-      const ds = Object.keys(trendData).map((k) => ({
-        label: k,
-        data: trendData[k],
-        borderColor: COLORS[k] || '#64748b',
-        backgroundColor: hexToRgba(COLORS[k] || '#64748b', 0.14),
-        fill: true,
-        tension: 0.35,
-        borderWidth: 2,
-        pointRadius: 2,
-        pointHoverRadius: 4
-      }));
+      const ctx = chart.ctx;
+      const offset = pluginOptions?.offset ?? 16;
+      const lineLen = pluginOptions?.lineLen ?? 14;
+      const horizLen = pluginOptions?.horizLen ?? 22;
+      const boxW = pluginOptions?.boxW ?? 44;
+      const boxH = pluginOptions?.boxH ?? 22;
 
-      charts.trend = new Chart(ctx, {
-        type: 'line',
-        data: { labels: months, datasets: ds },
-        options: {
-          maintainAspectRatio: false,
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: { position: 'top', align: 'end' }
-          },
-          scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(148,163,184,.25)' } },
-            x: { grid: { display: false } }
-          }
-        }
+      const drawRoundedRect = (x, y, w, h, r) => {
+        const rr = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + rr, y);
+        ctx.lineTo(x + w - rr, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+        ctx.lineTo(x + w, y + h - rr);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+        ctx.lineTo(x + rr, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+        ctx.lineTo(x, y + rr);
+        ctx.quadraticCurveTo(x, y, x + rr, y);
+        ctx.closePath();
+      };
+
+      ctx.save();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(15,23,42,.35)';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 12px Sarabun';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      meta.data.forEach((arc, i) => {
+        const v = data[i];
+        if (!v) return;
+
+        const angle = (arc.startAngle + arc.endAngle) / 2;
+        const cx = arc.x;
+        const cy = arc.y;
+        const r = arc.outerRadius;
+
+        const x1 = cx + Math.cos(angle) * (r + 2);
+        const y1 = cy + Math.sin(angle) * (r + 2);
+        const x2 = cx + Math.cos(angle) * (r + offset);
+        const y2 = cy + Math.sin(angle) * (r + offset);
+
+        const rightSide = Math.cos(angle) >= 0;
+        const x3 = x2 + (rightSide ? horizLen : -horizLen);
+        const y3 = y2;
+
+        // leader line
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.lineTo(x3, y3);
+        ctx.stroke();
+
+        // label box
+        const bx = rightSide ? (x3 + 6) : (x3 - boxW - 6);
+        const by = y3 - boxH / 2;
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(15,23,42,.18)';
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 4;
+        drawRoundedRect(bx, by, boxW, boxH, 6);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.shadowColor = 'transparent';
+        ctx.strokeStyle = 'rgba(148,163,184,.9)';
+        ctx.stroke();
+        ctx.restore();
+
+        const pct = Math.round((v / total) * 100);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillText(`${pct}%`, bx + boxW / 2, by + boxH / 2);
       });
-    }
 
-    // job mix
-    const jobEl = document.getElementById('jobChart');
-    if (jobEl) {
-      if (charts.job) charts.job.destroy();
-      charts.job = new Chart(jobEl.getContext('2d'), {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(stats),
-          datasets: [{
-            data: Object.values(stats),
-            backgroundColor: Object.keys(stats).map(k => COLORS[k] || '#64748b'),
-            borderColor: '#ffffff',
-            borderWidth: 5,
-            hoverOffset: 10,
-            borderRadius: 8
-          }]
-        },
-        options: {
-          maintainAspectRatio: false,
-          cutout: '72%',
-          plugins: {
-            legend: { position: 'bottom' }
-          },
-          animation: { duration: 700, easing: 'easeOutQuart' }
-        },
-        plugins: [centerTextPlugin]
-      });
-    }
-
-    // device bar (only visible in analytics mode but canvas exists)
-    const devEl = document.getElementById('deviceChart');
-    if (devEl) {
-      if (charts.device) charts.device.destroy();
-      charts.device = new Chart(devEl.getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: deviceHeaders.map(h => h.name),
-          datasets: [{
-            label: 'จำนวน',
-            data: deviceHeaders.map(h => totals[h.id] || 0),
-            backgroundColor: 'rgba(37, 99, 235, .25)',
-            borderColor: 'rgba(37, 99, 235, .9)',
-            borderWidth: 1.5,
-            borderRadius: 10
-          }]
-        },
-        options: {
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(148,163,184,.25)' } },
-            x: { grid: { display: false } }
-          }
-        }
-      });
-    }
-
-    // top companies
-    const topEl = document.getElementById('topCompanyChart');
-    if (topEl) {
-      const top = computeTopCompanies(globalData, 10);
-      if (charts.topCompany) charts.topCompany.destroy();
-      charts.topCompany = new Chart(topEl.getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: top.map(x => x.name),
-          datasets: [{
-            label: 'จำนวนงาน',
-            data: top.map(x => x.count),
-            backgroundColor: 'rgba(15, 23, 42, .12)',
-            borderColor: 'rgba(15, 23, 42, .65)',
-            borderWidth: 1.2,
-            borderRadius: 10
-          }]
-        },
-        options: {
-          maintainAspectRatio: false,
-          indexAxis: 'y',
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { beginAtZero: true, grid: { color: 'rgba(148,163,184,.25)' } },
-            y: { grid: { display: false }, ticks: { callback: (v, i) => truncateLabel(top[i]?.name || '', 18) } }
-          }
-        }
-      });
+      ctx.restore();
     }
   };
 
-  function computeTopCompanies(data, n = 10) {
-    const map = new Map();
-    data.forEach(d => {
-      const key = String(d.companyName || 'ไม่ระบุ').trim();
-      map.set(key, (map.get(key) || 0) + 1);
+  // Show value labels only when exactly ONE dataset is visible (no monthly totals)
+const barValueLabelsPlugin = {
+  id: 'barValueLabelsPlugin',
+  afterDatasetsDraw(chart) {
+    if (chart.config.type !== 'bar') return;
+
+    const indexAxis = chart.options?.indexAxis || 'x';
+    if (indexAxis !== 'x') return; // vertical grouped bars only
+
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = 'rgba(15,23,42,.85)';
+    ctx.font = '700 10px Sarabun';
+
+    chart.data.datasets.forEach((ds, di) => {
+      if (!chart.isDatasetVisible(di)) return;
+      const meta = chart.getDatasetMeta(di);
+      meta.data?.forEach((bar, idx) => {
+        const v = Number(ds.data?.[idx]) || 0;
+        if (!v) return;
+        const x = bar.x;
+        const y = Math.max(chart.chartArea.top + 10, bar.y - 4);
+        ctx.fillText(String(v), x, y);
+      });
     });
-    return Array.from(map.entries())
-      .map(([name, count]) => ({ name, count }))
-      .sort((a,b)=>b.count-a.count)
-      .slice(0, n);
+
+    ctx.restore();
   }
+};
+
+const hBarValueLabelsPlugin = {
+  id: 'hBarValueLabelsPlugin',
+  afterDatasetsDraw(chart) {
+    if (chart.config.type !== 'bar') return;
+
+    const indexAxis = chart.options?.indexAxis || 'x';
+    if (indexAxis !== 'y') return; // horizontal bars only
+
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(15,23,42,.85)';
+    ctx.font = '800 11px Sarabun';
+
+    const right = chart.chartArea.right;
+
+    chart.data.datasets.forEach((ds, di) => {
+      if (!chart.isDatasetVisible(di)) return;
+      const meta = chart.getDatasetMeta(di);
+      meta.data?.forEach((bar, idx) => {
+        const v = Number(ds.data?.[idx]) || 0;
+        if (!v) return;
+        const x = Math.min(bar.x + 8, right - 4);
+        const y = bar.y;
+        ctx.fillText(String(v), x, y);
+      });
+    });
+
+    ctx.restore();
+  }
+};
+
+  window.updateCharts = async (stats, totals, range) => {
+    const analytics = isAnalyticsMode();
+
+    // --- trend data (monthly) ---
+    const monthLabels = analytics ? MONTHS_EN : MONTHS_TH;
+    const trendData = {};
+    JOB_ORDER.forEach(k => trendData[k] = new Array(12).fill(0));
+
+    (globalData || []).forEach(item => {
+      const ds = String(item.workDate || item.date || '').trim();
+      // expected format: YYYY-MM-DD (timezone-safe)
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(ds)) return;
+      const m = parseInt(ds.slice(5, 7), 10) - 1;
+      if (Number.isNaN(m) || m < 0 || m > 11) return;
+      const t = String(item.jobType || '').trim();
+      if (trendData[t]) trendData[t][m] += 1;
+    });
+
+    // --- Trend chart ---
+    const trendEl = document.getElementById('trendChart');
+    if (trendEl) {
+      const tctx = trendEl.getContext('2d');
+      if (charts.trend) charts.trend.destroy();
+
+      if (analytics) {
+        charts.trend = new Chart(tctx, {
+          type: 'bar',
+          data: {
+            labels: monthLabels,
+            datasets: JOB_ORDER.map(k => ({
+              label: displayJobLabel(k, true),
+              data: trendData[k],
+              backgroundColor: COLORS[k],
+              hoverBackgroundColor: COLORS[k],
+              borderWidth: 0,
+              borderRadius: 10,
+              borderSkipped: false,
+              barPercentage: 0.85,
+              categoryPercentage: 0.70
+            }))
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { usePointStyle: true, pointStyle: 'rectRounded', boxWidth: 10, font: { family: 'Sarabun', size: 11, weight: '700' } }
+              },
+              tooltip: { mode: 'index', intersect: false }
+            },
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+              x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 11, weight: '700' } } },
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(148,163,184,.25)' },
+                ticks: { precision: 0, font: { family: 'Sarabun', size: 11, weight: '700' } }
+              }
+            }
+          },
+          plugins: [barValueLabelsPlugin]
+        });
+      } else {
+        charts.trend = new Chart(tctx, {
+          type: 'line',
+          data: {
+            labels: monthLabels,
+            datasets: JOB_ORDER.map(k => ({
+              label: k,
+              data: trendData[k],
+              borderColor: COLORS[k],
+              borderWidth: 2,
+              backgroundColor: hexToRgba(COLORS[k], 0.12),
+              tension: 0.35,
+              fill: true,
+              pointRadius: 2,
+              pointHoverRadius: 3
+            }))
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: {
+                position: 'top',
+                align: 'end',
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: 'circle',
+                  boxWidth: 10,
+                  font: { family: 'Sarabun', size: 11, weight: '700' }
+                }
+              },
+              tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 11, weight: '700' } } },
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(148,163,184,.25)' },
+                ticks: { precision: 0, font: { family: 'Sarabun', size: 11, weight: '700' } }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // --- Work mix / All Service (doughnut) ---
+    const jobEl = document.getElementById('jobChart');
+    if (jobEl) {
+      const jctx = jobEl.getContext('2d');
+      if (charts.job) charts.job.destroy();
+
+      const labels = JOB_ORDER.map(k => displayJobLabel(k, analytics));
+      const values = JOB_ORDER.map(k => Number(stats?.[k]) || 0);
+
+      charts.job = new Chart(jctx, {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            backgroundColor: JOB_ORDER.map(k => COLORS[k]),
+            borderColor: '#ffffff',
+            borderWidth: analytics ? 8 : 6,
+            hoverOffset: 6,
+            borderRadius: 10,
+            spacing: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: analytics ? '68%' : '72%',
+          layout: { padding: analytics ? 28 : 10 },
+          plugins: {
+            legend: analytics ? { display: false } : {
+              position: 'bottom',
+              labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 10, font: { family: 'Sarabun', size: 11, weight: '700' } }
+            },
+            tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}` } },
+            centerTextPlugin: analytics
+              ? { variant: 'analytics', label: 'Work', centerFill: '#0f172a', valueColor: '#ffffff', labelColor: '#e2e8f0' }
+              : { variant: 'default' },
+            percentCalloutsPlugin: { enabled: analytics }
+          }
+        },
+        plugins: analytics ? [centerTextPlugin, percentCalloutsPlugin] : [centerTextPlugin]
+      });
+    }
+
+    
+    // --- Device / Top company charts (Analytics only) ---
+    if (analytics) {
+      // device bar (full analytics only)
+      const devEl = document.getElementById('deviceChart');
+      if (devEl) {
+        if (charts.device) charts.device.destroy();
+        charts.device = new Chart(devEl.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: deviceHeaders.map(h => h.name),
+            datasets: [{
+              label: 'จำนวน',
+              data: deviceHeaders.map(h => totals[h.id] || 0),
+              backgroundColor: '#93c5fd',
+              borderColor: '#2563eb',
+              borderWidth: 1.5,
+              borderRadius: 10
+            }]
+          },
+          options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: 'rgba(148,163,184,.25)' } },
+              x: { grid: { display: false } }
+            }
+          },
+          plugins: [barValueLabelsPlugin]
+        });
+      }
+
+      // top companies/proj (show whole year of selected year)
+      const topEl = document.getElementById('topCompanyChart');
+      if (topEl) {
+        const endISO = String(range?.end || '');
+        const year = (/^\d{4}-/.test(endISO) ? parseInt(endISO.slice(0,4), 10) : (new Date()).getFullYear());
+
+        // Update subtitle to clarify scope
+        const sub = document.getElementById('top-company-subtitle');
+        if (sub) sub.textContent = `Top 10 ตามจำนวนอุปกรณ์รวม (เฉพาะ Project) • ทั้งปี ${year}`;
+
+        // Pull full-year data for the selected year (not limited by current range)
+        const y = String(year);
+        const yearStart = `${y}-01-01`;
+        const yearEnd = `${y}-12-31`;
+
+        let yearData = [];
+        // If current query already covers the full year, reuse it. Otherwise, fetch the whole year from Firestore.
+        if (String(range?.start || '') === yearStart && String(range?.end || '') === yearEnd) {
+          yearData = (globalData || []).filter(d => String(d.workDate || d.date || '').slice(0,4) === y);
+        } else {
+          yearData = await getYearData(year);
+        }
+
+        const top = computeTopProjects(yearData, 10);
+
+        if (charts.topCompany) charts.topCompany.destroy();
+        charts.topCompany = new Chart(topEl.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: top.map(x => x.name),
+            datasets: [{
+              label: 'จำนวนอุปกรณ์รวม',
+              data: top.map(x => x.devices),
+              backgroundColor: '#e5e7eb',
+              borderColor: '#334155',
+              borderWidth: 1.2,
+              borderRadius: 10
+            }]
+          },
+          options: {
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  title: (items) => {
+                    const i = items?.[0]?.dataIndex ?? 0;
+                    return top[i]?.name || '';
+                  },
+                  label: (ctx) => {
+                    const i = ctx.dataIndex ?? 0;
+                    const it = top[i] || { works: 0, devices: 0 };
+                    return [`อุปกรณ์รวม: ${it.devices}`, `งาน: ${it.works}`];
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { beginAtZero: true, grid: { color: 'rgba(148,163,184,.25)' } },
+              y: { grid: { display: false }, ticks: { callback: (v, i) => truncateLabel(top[i]?.name || '', 18) } }
+            }
+          },
+          plugins: [hBarValueLabelsPlugin]
+        });
+      }
+    }
+
+
+  };
+
+
+
+  
+  function normalizeCompanyName(s){
+    return (String(s ?? 'ไม่ระบุ').trim().replace(/\s+/g,' ') || 'ไม่ระบุ');
+  }
+
+  function sumDevicesAll(devs){
+    const obj = (devs && typeof devs === 'object') ? devs : {};
+    return Object.values(obj).reduce((a,b)=>a+(Number(b)||0),0);
+  }
+
+function computeTopProjects(data, n = 10) {
+  // Aggregate per "company/project" but ONLY from PROJECT jobType
+  // This is aligned with the PROJECT detail modal/list (so numbers match).
+  const map = new Map();
+
+  (data || []).forEach(d => {
+    if (String(d?.jobType || '') !== 'PROJECT') return;
+    const key = normalizeCompanyName(d?.companyName);
+    const cur = map.get(key) || { name: key, works: 0, devices: 0 };
+    cur.works += 1;
+    cur.devices += sumDevicesAll(d?.devices);
+    map.set(key, cur);
+  });
+
+  return Array.from(map.values())
+    .sort((a, b) => (b.devices - a.devices) || (b.works - a.works))
+    .slice(0, n);
+}
+
 
   function truncateLabel(s, max=18){
     s = String(s || '');
@@ -1416,7 +1843,7 @@
 
     const listHtml = filtered.map(d => {
       const devices = d.devices || {};
-      const total = Object.values(devices).reduce((a, b) => a + (Number(b) || 0), 0);
+      const total = sumDevicesAll(devices);
       deviceHeaders.forEach(h => modalSum[h.id] += (Number(devices[h.id]) || 0));
 
       const img = d.imageUrl
