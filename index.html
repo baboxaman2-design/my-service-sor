@@ -172,10 +172,10 @@
     </nav>
 
     <div class="mt-auto p-4 border-t border-slate-200">
-      <button onclick="handleLogout()" class="w-full py-2.5 rounded-2xl bg-red-50 hover:bg-red-600 text-red-600 hover:text-white font-extrabold transition admin-only hidden">
+      <button onclick="handleLogout()" class="w-full py-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-red-50 text-red-600 font-extrabold transition admin-only hidden">
         <i class="fas fa-right-from-bracket mr-2"></i>ออกจากระบบ
       </button>
-      <p id="user-email" class="mt-3 text-[11px] text-slate-500 truncate admin-only hidden"></p>
+<p id="user-email" class="mt-3 text-[11px] text-slate-500 truncate admin-only hidden"></p>
       <button onclick="openLoginModal()" class="w-full py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold transition guest-only">
         <i class="fas fa-shield-halved mr-2"></i>เข้าสู่ระบบเพื่อแก้ไข
       </button>
@@ -231,11 +231,7 @@
             <button id="btn-open-login-top" onclick="openLoginModal()" class="guest-only bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition">
               <i class="fas fa-shield-halved"></i>เข้าสู่ระบบ
             </button>
-            <button id="btn-logout-top" onclick="handleLogout()" class="admin-only hidden bg-red-50 hover:bg-red-600 text-red-700 hover:text-white px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition">
-              <i class="fas fa-right-from-bracket"></i>ออกจากระบบ
-            </button>
-
-            <input type="file" id="importFile" accept=".xlsx,.xls" class="hidden" onchange="handleImport(event)">
+<input type="file" id="importFile" accept=".xlsx,.xls" class="hidden" onchange="handleImport(event)">
             <button onclick="document.getElementById('importFile').click()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition shadow-sm admin-only hidden">
               <i class="fas fa-file-import"></i>Import
             </button>
@@ -326,11 +322,11 @@
             <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
               <div>
                 <h3 class="text-sm font-extrabold text-slate-900">
-                  <i class="fas fa-microchip text-blue-600 mr-2"></i>List of installed equipment
+                  <i class="fas fa-microchip text-blue-600 mr-2"></i>สรุปอุปกรณ์ (เฉพาะงานที่ไม่ใช่ PROJECT)
                 </h3>
-                <p class="text-[11px] text-slate-500 font-bold mt-1"></p>
+                <p class="text-[11px] text-slate-500 font-bold mt-1">แสดงยอดรวมตามหัวข้ออุปกรณ์ในช่วงเวลาที่เลือก</p>
               </div>
-              <span class="chip hidden"><i class="fa-solid fa-filter"></i>Exclude Project</span>
+              <span class="chip"><i class="fa-solid fa-filter"></i>Exclude Project</span>
             </div>
             <div class="p-5">
               <div id="device-totals" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-7 gap-3"></div>
@@ -342,7 +338,7 @@
             <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-list-check text-blue-600 mr-2"></i>รายการงาน (ล่าสุดก่อน)</h3>
-                <p class="hidden""text-[11px] text-slate-500 font-bold mt-1">คลิกแถวเพื่อดูรายละเอียด (ต้องเข้าสู่ระบบเพื่อแก้ไข) / กดตัวเลข KPI เพื่อดูรายละเอียดแบบสรุป</p>
+                <p class="text-[11px] text-slate-500 font-bold mt-1">คลิกแถวเพื่อดูรายละเอียด (ต้องเข้าสู่ระบบเพื่อแก้ไข) / กดตัวเลข KPI เพื่อดูรายละเอียดแบบสรุป</p>
               </div>
 
               <div class="flex items-center gap-2">
@@ -499,7 +495,7 @@
         <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-chart-area text-blue-600 mr-2"></i>Trend รายเดือน</h3>
-            <p class="text-[11px] text-slate-500 font-bold mt-1"></p>
+            <p class="text-[11px] text-slate-500 font-bold mt-1">จำนวนงานในแต่ละเดือน (แยกตามประเภท)</p>
           </div>
           <span class="chip"><i class="fa-regular fa-clock"></i>Monthly</span>
         </div>
@@ -509,73 +505,140 @@
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
-            <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-chart-pie text-red-600 mr-2"></i>Services</h3>
-            <p class="text-[11px] text-slate-500 font-bold mt-1"></p>
+            <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-chart-pie text-blue-600 mr-2"></i>Work Mix</h3>
+            <p class="text-[11px] text-slate-500 font-bold mt-1">สัดส่วนงานในช่วงเวลาที่เลือก</p>
           </div>
-          <span class="chip hidden"><i class="fa-solid fa-ring"></i>Mix</span>
+          <span class="chip"><i class="fa-solid fa-ring"></i>Mix</span>
         </div>
         <div class="p-5 h-[360px]" id="slot-job-dashboard"></div>
       </div>
     </div>
 
-    <!-- Analytics layout (ให้เหมือนรูปตัวอย่างที่ 2: โดนัท + กราฟแท่งรายเดือน) -->
+    <!-- Analytics layout (ปรับให้สวยงาม/เข้าใจง่ายขึ้น) -->
     <div class="charts-analytics hidden space-y-6">
-      <!-- All Service -->
-      <div class="flex justify-center">
-        <div class="w-full max-w-3xl bg-white rounded-[2rem] border border-slate-200 shadow-soft p-6 md:p-8">
-          <div class="text-center">
-            <h3 class="text-xl font-extrabold text-slate-900">All Service</h3>
-            <p class="hidden""text-[12px] text-slate-500 font-bold mt-1">สัดส่วนประเภทงานทั้งหมด (แสดง % รอบวง)</p>
+
+      <!-- All Service (Work Mix) -->
+      <div class="bg-white rounded-[2rem] border border-slate-200 shadow-soft overflow-hidden">
+        <div class="px-6 md:px-8 py-5 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-blue-600/10 text-blue-700 flex items-center justify-center">
+                <i class="fa-solid fa-chart-pie"></i>
+              </div>
+              <div>
+                <h3 class="text-lg md:text-xl font-extrabold text-slate-900 leading-tight">All Service</h3>
+                <p class="text-[12px] text-slate-500 font-bold mt-0.5">
+                  สัดส่วนประเภทงานทั้งหมด • <span id="mix-range-analytics">ช่วงเวลา</span>
+                </p>
+              </div>
+            </div>
+            <span class="chip"><i class="fa-solid fa-ring"></i>Work Mix</span>
           </div>
-          <div class="mt-4 relative mx-auto w-full max-w-[560px] h-[340px]" id="slot-job-analytics"></div>
+        </div>
+
+        <div class="p-6 md:p-8">
+          <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center">
+            <!-- Donut -->
+            <div class="lg:col-span-3">
+              <div class="relative mx-auto w-full max-w-[540px] h-[360px]" id="slot-job-analytics"></div>
+            </div>
+
+            <!-- Summary -->
+            <div class="lg:col-span-2">
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+                <div class="flex items-center justify-between">
+                  <p class="text-xs font-extrabold text-slate-600 uppercase tracking-wider">สรุปตามประเภท</p>
+                  <span class="text-[11px] font-extrabold text-slate-500">Total: <span id="mix-total-analytics">0</span></span>
+                </div>
+
+                <div id="mix-summary-analytics" class="mt-3 space-y-2"></div>
+
+                <div class="mt-4 flex items-start gap-2 text-[11px] text-slate-500 font-bold leading-relaxed">
+                  <i class="fa-solid fa-lightbulb mt-[2px]"></i>
+                  <p>
+                    เคล็ดลับ: เลื่อนเมาส์เพื่อดูรายละเอียด • ในกราฟแท่งด้านล่างสามารถคลิก Legend เพื่อซ่อน/แสดงแต่ละประเภทได้
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Service Month -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-screwdriver-wrench text-blue-600"></i>
+        <div class="px-6 py-5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-indigo-600/10 text-indigo-700 flex items-center justify-center">
+              <i class="fa-solid fa-chart-column"></i>
+            </div>
             <div>
-              <h3 class="text-sm font-extrabold text-slate-900">Service Month</h3>
-              <p class="hidden""text-[11px] text-slate-500 font-bold mt-1">จำนวนงานรายเดือน (แยกตามประเภท)</p>
+              <h3 class="text-base md:text-lg font-extrabold text-slate-900 leading-tight">Service Month</h3>
+              <p class="text-[12px] text-slate-500 font-bold mt-0.5">
+                จำนวนงานรายเดือน (แยกตามประเภท) • <span id="trend-range-analytics">ช่วงเวลา</span>
+              </p>
             </div>
           </div>
           <span class="chip"><i class="fa-solid fa-chart-column"></i>Bar</span>
         </div>
-        <div class="p-5 h-[380px]" id="slot-trend-analytics"></div>
+
+        <div class="p-5 md:p-6">
+          <div class="h-[420px]" id="slot-trend-analytics"></div>
+        </div>
       </div>
+
     </div>
 
-    <!-- Full charts (only show in Analytics mode) -->
-    <div class="charts-full space-y-4">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-boxes-stacked text-blue-600 mr-2"></i>ยอดรวมอุปกรณ์</h3>
-              <p class="hidden""text-[11px] text-slate-500 font-bold mt-1">รวมจำนวนอุปกรณ์ตามหัวข้อ (Exclude Project)</p>
+    <!-- Full charts (only show in Analytics mode) --> (only show in Analytics mode) -->
+    <div class="charts-full space-y-6">
+      <div class="flex flex-wrap items-end justify-between gap-3 px-1">
+        <div>
+          <h3 class="text-sm md:text-base font-extrabold text-slate-900">Insights</h3>
+          <p class="text-[11px] text-slate-500 font-bold mt-0.5">สรุปอุปกรณ์และ Top Project สำหรับปีที่เลือก (โปรขึ้น • อ่านง่าย)</p>
+        </div>
+        <span class="chip"><i class="fa-solid fa-wand-magic-sparkles"></i>Pro View</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Devices -->
+        <div class="bg-white rounded-[1.5rem] border border-slate-200 shadow-soft overflow-hidden">
+          <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-sky-600/10 text-sky-700 flex items-center justify-center">
+                <i class="fa-solid fa-microchip"></i>
+              </div>
+              <div>
+                <h3 class="text-base md:text-lg font-extrabold text-slate-900 leading-tight">ยอดรวมอุปกรณ์</h3>
+                <p class="text-[12px] text-slate-500 font-bold mt-0.5">รวมจำนวนอุปกรณ์ตามหัวข้อ (Exclude Project)</p>
+              </div>
             </div>
             <span class="chip"><i class="fa-solid fa-microchip"></i>Devices</span>
           </div>
-          <div class="p-5 h-[360px]">
+          <div class="p-6 h-[380px]">
             <canvas id="deviceChart"></canvas>
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-building text-blue-600 mr-2"></i>Top บริษัท/โปรเจค</h3>
-              <p id="top-company-subtitle" class="text-[11px] text-slate-500 font-bold mt-1">Top 10 ตามจำนวนอุปกรณ์รวม (เฉพาะ Project) • ทั้งปี</p>
+        <!-- Top Project -->
+        <div class="bg-white rounded-[1.5rem] border border-slate-200 shadow-soft overflow-hidden">
+          <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center">
+                <i class="fa-solid fa-ranking-star"></i>
+              </div>
+              <div>
+                <h3 class="text-base md:text-lg font-extrabold text-slate-900 leading-tight">Top บริษัท/โปรเจค</h3>
+                <p id="top-company-subtitle" class="text-[12px] text-slate-500 font-bold mt-0.5">Top 10 ตามจำนวนอุปกรณ์รวม (เฉพาะ Project) • ทั้งปี</p>
+              </div>
             </div>
             <span class="chip"><i class="fa-solid fa-ranking-star"></i>Top 10</span>
           </div>
-          <div class="p-5 h-[360px]">
+          <div class="p-6 h-[380px]">
             <canvas id="topCompanyChart"></canvas>
           </div>
         </div>
       </div>
+    </div>
     </div>
   </div>
 
@@ -1093,6 +1156,30 @@
     return localTodayISO();
   };
 
+
+
+  // --- Normalize job type from import file ---
+  // รองรับทั้งรูปแบบเดิม (เช่น Onsite-Free) และรูปแบบโค้ดจากไฟล์ import (เช่น ONSITE-FREE, ONSITE-CHARGE, SALES)
+  const normalizeJobType = (val) => {
+    const raw = String(val ?? '').trim();
+    if (!raw) return 'INSTALL';
+
+    // normalize case and separators
+    const u = raw.toUpperCase().replace(/_/g, '-').replace(/\s+/g, ' ').trim();
+
+    if (u === 'PROJECT') return 'PROJECT';
+    if (u === 'INSTALL') return 'INSTALL';
+
+    if (u === 'ONSITE-FREE' || u === 'ON-SITE-FREE') return 'Onsite-Free';
+    if (u === 'ONSITE-CHARGE' || u === 'ON-SITE-CHARGE') return 'Onsite-Charge';
+
+    // ในไฟล์บางชุดใช้ SALES แทน Onsite-Survey
+    if (u === 'SALES') return 'Onsite-Survey';
+    if (u === 'ONSITE-SURVEY' || u === 'ON-SITE-SURVEY') return 'Onsite-Survey';
+
+    // fallback: keep original (for future types)
+    return raw;
+  };
   window.handleImport = async (event) => {
     if (!isAuthed) { openLoginModal(); try { event.target.value = ""; } catch(_) {} return; }
     const file = event.target.files[0];
@@ -1111,7 +1198,7 @@
 
         for (const row of jsonData) {
           const workDate = formatExcelDate(row.วันที่ || row.workDate || row["Date"]);
-          const jobType = String(row.ประเภทงาน || row.jobType || row["Type"] || 'INSTALL').trim();
+          const jobType = normalizeJobType(row.ประเภทงาน || row.jobType || row["Type"] || 'INSTALL');
           const companyName = String(row.ชื่อบริษัท || row.companyName || row["บริษัท/โปรเจค"] || row["Company"] || 'ไม่ระบุ').trim();
 
           // find existing by key
@@ -1231,7 +1318,7 @@
       ctx.fillText(String(total || 0), x, y - 6);
       ctx.fillStyle = '#64748b';
       ctx.font = '700 12px Sarabun';
-      ctx.fillText('Total', x, y + 16);
+      ctx.fillText('งานทั้งหมด', x, y + 16);
       ctx.restore();
     }
   };
@@ -1344,7 +1431,7 @@ const barValueLabelsPlugin = {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
     ctx.fillStyle = 'rgba(15,23,42,.85)';
-    ctx.font = '700 10px Sarabun';
+    ctx.font = '800 11px Sarabun';
 
     chart.data.datasets.forEach((ds, di) => {
       if (!chart.isDatasetVisible(di)) return;
@@ -1354,6 +1441,9 @@ const barValueLabelsPlugin = {
         if (!v) return;
         const x = bar.x;
         const y = Math.max(chart.chartArea.top + 10, bar.y - 4);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'rgba(255,255,255,.92)';
+        ctx.strokeText(String(v), x, y);
         ctx.fillText(String(v), x, y);
       });
     });
@@ -1387,6 +1477,9 @@ const hBarValueLabelsPlugin = {
         if (!v) return;
         const x = Math.min(bar.x + 8, right - 4);
         const y = bar.y;
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'rgba(255,255,255,.92)';
+        ctx.strokeText(String(v), x, y);
         ctx.fillText(String(v), x, y);
       });
     });
@@ -1395,10 +1488,69 @@ const hBarValueLabelsPlugin = {
   }
 };
 
-  window.updateCharts = async (stats, totals, range) => {
+
+// Subtle shadow for Service Month bars (analytics) to look more premium
+const barShadowPlugin = {
+  id: 'barShadowPlugin',
+  beforeDatasetDraw(chart, args) {
+    if (chart.config.type !== 'bar') return;
+    if (chart.canvas?.id !== 'trendChart') return; // only Service Month
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.shadowColor = 'rgba(15,23,42,.14)';
+    ctx.shadowBlur = 12;
+    ctx.shadowOffsetY = 6;
+  },
+  afterDatasetDraw(chart) {
+    if (chart.config.type !== 'bar') return;
+    if (chart.canvas?.id !== 'trendChart') return;
+    chart.ctx.restore();
+  }
+};
+
+  
+  const renderMixSummaryAnalytics = (stats = {}, range) => {
+    const wrap = document.getElementById('mix-summary-analytics');
+    const totalEl = document.getElementById('mix-total-analytics');
+    const rangeEl = document.getElementById('mix-range-analytics');
+    const trendRangeEl = document.getElementById('trend-range-analytics');
+
+    const total = JOB_ORDER.reduce((acc, k) => acc + (Number(stats?.[k]) || 0), 0);
+    if (totalEl) totalEl.textContent = String(total || 0);
+
+    const rangeText = range?.start && range?.end ? `${range.start} – ${range.end}` : 'ช่วงเวลาที่เลือก';
+    if (rangeEl) rangeEl.textContent = rangeText;
+    if (trendRangeEl) trendRangeEl.textContent = rangeText;
+
+    if (!wrap) return;
+
+    wrap.innerHTML = JOB_ORDER.map(k => {
+      const v = Number(stats?.[k]) || 0;
+      const pct = total > 0 ? (v / total) * 100 : 0;
+      const label = displayJobLabel(k, true);
+      const color = COLORS[k] || '#64748b';
+      const faded = v === 0 ? 'opacity-50' : '';
+      return `
+        <div class="flex items-center justify-between rounded-2xl px-3 py-2 bg-white border border-slate-200 ${faded}">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-2.5 h-2.5 rounded-full" style="background:${color}"></span>
+            <span class="text-xs font-extrabold text-slate-700 truncate">${label}</span>
+          </div>
+          <div class="flex items-baseline gap-2 shrink-0">
+            <span class="text-sm font-extrabold text-slate-900 tabular-nums">${v}</span>
+            <span class="text-[11px] font-extrabold text-slate-500 tabular-nums">${pct.toFixed(0)}%</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+window.updateCharts = async (stats, totals, range) => {
     const analytics = isAnalyticsMode();
 
-    // --- trend data (monthly) ---
+    
+    if (analytics) renderMixSummaryAnalytics(stats, range);
+// --- trend data (monthly) ---
     const monthLabels = analytics ? MONTHS_EN : MONTHS_TH;
     const trendData = {};
     JOB_ORDER.forEach(k => trendData[k] = new Array(12).fill(0));
@@ -1429,16 +1581,20 @@ const hBarValueLabelsPlugin = {
               data: trendData[k],
               backgroundColor: COLORS[k],
               hoverBackgroundColor: COLORS[k],
-              borderWidth: 0,
-              borderRadius: 10,
+              borderColor: 'rgba(15,23,42,.10)',
+              borderWidth: 1,
+              borderRadius: 14,
               borderSkipped: false,
-              barPercentage: 0.85,
-              categoryPercentage: 0.70
+              minBarLength: 2,
+              barPercentage: 0.92,
+              categoryPercentage: 0.78,
+              maxBarThickness: 26
             }))
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: { padding: { top: 18, left: 4, right: 8, bottom: 0 } },
             plugins: {
               legend: {
                 position: 'bottom',
@@ -1448,15 +1604,15 @@ const hBarValueLabelsPlugin = {
             },
             interaction: { mode: 'index', intersect: false },
             scales: {
-              x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 11, weight: '700' } } },
+              x: { grid: { display: false, drawBorder: false }, border: { display: false }, ticks: { padding: 8, font: { family: 'Sarabun', size: 11, weight: '700' } } },
               y: {
                 beginAtZero: true,
-                grid: { color: 'rgba(148,163,184,.25)' },
-                ticks: { precision: 0, font: { family: 'Sarabun', size: 11, weight: '700' } }
+                grid: { color: 'rgba(148,163,184,.22)', drawBorder: false }, border: { display: false },
+                ticks: { precision: 0, padding: 8, font: { family: 'Sarabun', size: 11, weight: '700' } }
               }
             }
           },
-          plugins: [barValueLabelsPlugin]
+          plugins: [barShadowPlugin, barValueLabelsPlugin]
         });
       } else {
         charts.trend = new Chart(tctx, {
@@ -1493,7 +1649,7 @@ const hBarValueLabelsPlugin = {
               tooltip: { mode: 'index', intersect: false }
             },
             scales: {
-              x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 11, weight: '700' } } },
+              x: { grid: { display: false, drawBorder: false }, border: { display: false }, ticks: { padding: 8, font: { family: 'Sarabun', size: 11, weight: '700' } } },
               y: {
                 beginAtZero: true,
                 grid: { color: 'rgba(148,163,184,.25)' },
@@ -1563,19 +1719,51 @@ const hBarValueLabelsPlugin = {
             datasets: [{
               label: 'จำนวน',
               data: deviceHeaders.map(h => totals[h.id] || 0),
-              backgroundColor: '#93c5fd',
-              borderColor: '#2563eb',
-              borderWidth: 1.5,
-              borderRadius: 10
+              backgroundColor: '#3b82f6',
+              borderColor: '#1d4ed8',
+              borderWidth: 1,
+              borderRadius: 12,
+              maxBarThickness: 34
             }]
           },
           options: {
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            layout: { padding: { top: 8, right: 14, left: 8, bottom: 0 } },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => {
+                    const v = (ctx.parsed && typeof ctx.parsed === 'object') ? (ctx.parsed.y ?? ctx.parsed.x) : ctx.parsed;
+                    return `จำนวน: ${Number(v)||0}`;
+                  }
+                }
+              }
+            },
             scales: {
-              y: { beginAtZero: true, grid: { color: 'rgba(148,163,184,.25)' } },
-              x: { grid: { display: false } }
-            }
+              y: {
+                beginAtZero: true,
+                title: { display: false },
+                ticks: { precision: 0, font: { size: 11, weight: '700' } },
+                grid: { color: 'rgba(148,163,184,.22)' }
+              },
+              x: {
+                title: { display: false },
+                grid: { display: false },
+                ticks: {
+                font: { size: 11, weight: '700' },
+                autoSkip: false,
+                maxRotation: 25,
+                minRotation: 25,
+                padding: 6,
+                callback: function(value) {
+                  const label = this.getLabelForValue(value);
+                  return wrapTickLabel(label, 14);
+                }
+              }
+              }
+            },
+            animation: { duration: 650, easing: 'easeOutQuart' }
           },
           plugins: [barValueLabelsPlugin]
         });
@@ -1614,15 +1802,16 @@ const hBarValueLabelsPlugin = {
             datasets: [{
               label: 'จำนวนอุปกรณ์รวม',
               data: top.map(x => x.devices),
-              backgroundColor: '#e5e7eb',
-              borderColor: '#334155',
-              borderWidth: 1.2,
-              borderRadius: 10
+              backgroundColor: '#cbd5e1',
+              borderColor: '#475569',
+              borderWidth: 1,
+              borderRadius: 12
             }]
           },
           options: {
             maintainAspectRatio: false,
             indexAxis: 'y',
+            layout: { padding: { top: 8, right: 56, left: 6, bottom: 0 } },
             plugins: {
               legend: { display: false },
               tooltip: {
@@ -1640,9 +1829,22 @@ const hBarValueLabelsPlugin = {
               }
             },
             scales: {
-              x: { beginAtZero: true, grid: { color: 'rgba(148,163,184,.25)' } },
-              y: { grid: { display: false }, ticks: { callback: (v, i) => truncateLabel(top[i]?.name || '', 18) } }
-            }
+              x: {
+                beginAtZero: true,
+                title: { display: false },
+                ticks: { precision: 0, font: { size: 11, weight: '700' } },
+                grid: { color: 'rgba(148,163,184,.22)' }
+              },
+              y: {
+                title: { display: false },
+                grid: { display: false },
+                ticks: {
+                  font: { size: 11, weight: '700' },
+                  callback: (v, i) => truncateLabel(top[i]?.name || String(v) || '', 24)
+                }
+              }
+            },
+            animation: { duration: 650, easing: 'easeOutQuart' }
           },
           plugins: [hBarValueLabelsPlugin]
         });
@@ -1687,6 +1889,28 @@ function computeTopProjects(data, n = 10) {
   function truncateLabel(s, max=18){
     s = String(s || '');
     return s.length > max ? s.slice(0, max-1) + '…' : s;
+  }
+
+
+  function wrapTickLabel(label, maxLine=14){
+    label = String(label || '');
+    if (label.length <= maxLine) return label;
+
+    // Try to wrap on spaces into 2 lines (Chart.js supports array for multiline ticks)
+    const parts = label.split(' ').filter(Boolean);
+    if (parts.length <= 1) return truncateLabel(label, maxLine);
+
+    let line1 = '';
+    let line2 = '';
+    for (const w of parts) {
+      const next = (line1 ? (line1 + ' ' + w) : w);
+      if (next.length <= maxLine) line1 = next;
+      else line2 = (line2 ? (line2 + ' ' + w) : w);
+    }
+
+    if (!line2) return truncateLabel(label, maxLine);
+    if (line2.length > maxLine) line2 = truncateLabel(line2, maxLine);
+    return [line1, line2];
   }
 
   function hexToRgba(hex, a){
