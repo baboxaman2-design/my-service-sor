@@ -24,6 +24,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Firebase (compat for login screen only; main uses module imports) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -83,9 +84,145 @@
       color: var(--muted); font-weight: 700; font-size: 11px;
     }
   </style>
+
+  <!-- Applied UI/UX theme from TigerSoft Service Intelligence reference -->
+  <style id="tigersoft-service-intelligence-theme">
+    :root{
+      --bg:#08090c;--s1:#0e1117;--s2:#131720;--s3:#1a2030;--s4:#1f2838;
+      --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.10);--b3:rgba(255,255,255,.16);
+      --ink:#f0f4ff;--ink2:#8896b0;--ink3:#4a5568;
+      --topbar-bg:rgba(14,17,23,.9);
+      --A:#4f9eff;--A2:rgba(79,158,255,.12);--A3:rgba(79,158,255,.06);
+      --B:#ff7c3e;--B2:rgba(255,124,62,.12);--B3:rgba(255,124,62,.06);
+      --C:#a78bfa;--C2:rgba(167,139,250,.12);--G:#34d399;--G2:rgba(52,211,153,.12);
+      --R:#f87171;--R2:rgba(248,113,113,.12);--gold:#fbbf24;--r:14px;--r2:20px;
+      --card:var(--s1);--border:var(--b1);--text:var(--ink);--muted:var(--ink2);--brand:var(--A);
+    }
+    [data-theme="light"]{
+      --bg:#f0f3f9;--s1:#ffffff;--s2:#f4f6fb;--s3:#e8ecf5;--s4:#dde2ee;
+      --b1:rgba(0,0,0,.07);--b2:rgba(0,0,0,.12);--b3:rgba(0,0,0,.18);
+      --ink:#1a1f2e;--ink2:#4a5568;--ink3:#8fa0b8;--topbar-bg:rgba(255,255,255,.92);
+      --A:#2f7ee8;--A2:rgba(47,126,232,.12);--A3:rgba(47,126,232,.06);
+      --B:#e56c28;--B2:rgba(229,108,40,.12);--B3:rgba(229,108,40,.06);
+      --C:#7c5ce8;--C2:rgba(124,92,232,.12);--G:#0d9966;--G2:rgba(13,153,102,.12);--R:#dc2626;--R2:rgba(220,38,38,.10);
+    }
+    *{transition:background-color .25s ease,border-color .2s ease,color .15s ease,box-shadow .2s ease,transform .2s ease;}
+    body{font-family:'Noto Sans Thai','Sarabun',ui-sans-serif,system-ui !important;background:var(--bg)!important;color:var(--ink)!important;overflow-x:hidden;}
+    body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:9999;}
+    .glow-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80vw 60vh at 15% -10%,rgba(79,158,255,.07) 0%,transparent 70%),radial-gradient(ellipse 60vw 50vh at 90% 110%,rgba(167,139,250,.05) 0%,transparent 70%)}
+    body > aside, body > div.flex-1{position:relative;z-index:1;}
+    aside{background:var(--s1)!important;border-right:1px solid var(--b1)!important;padding:18px 12px!important;}
+    aside .border-b, aside .border-t{border-color:var(--b1)!important;}
+    header{background:var(--topbar-bg)!important;backdrop-filter:blur(16px);border-bottom:1px solid var(--b1)!important;}
+    main{background:transparent!important;}
+    .bg-white{background:var(--s1)!important;}.bg-slate-50{background:var(--s2)!important;}.bg-slate-100{background:var(--s2)!important;}.bg-slate-900{background:#0f172a!important;}
+    .border-slate-200,.border-slate-100,.border-slate-300,.border-slate-800{border-color:var(--b1)!important;}
+    .shadow-sm,.shadow-soft{box-shadow:none!important;}
+    .rounded-2xl{border-radius:var(--r2)!important;}
+    section .bg-white, #charts-block .bg-white, form.bg-white, #detail-modal .bg-white{border:1px solid var(--b1)!important;box-shadow:none!important;}
+    section .bg-white:hover, #charts-block .bg-white:hover{border-color:var(--b2)!important;}
+    .text-slate-900,.text-slate-800,.text-slate-700{color:var(--ink)!important;}.text-slate-600,.text-slate-500,.text-slate-400,.text-slate-300{color:var(--ink2)!important;}
+    .text-blue-600,.text-blue-700{color:var(--A)!important;}.text-emerald-600,.text-emerald-700,.text-emerald-500{color:var(--G)!important;}.text-amber-700,.text-yellow-300{color:var(--B)!important;}.text-violet-700{color:var(--C)!important;}.text-red-600,.text-red-500,.text-red-700{color:var(--R)!important;}
+    .bg-blue-600,.hover\:bg-blue-700:hover{background:var(--A)!important;}.bg-emerald-600,.hover\:bg-emerald-700:hover{background:var(--G)!important;}.bg-red-50{background:var(--R2)!important;}.bg-blue-50{background:var(--A2)!important;}.bg-emerald-50{background:var(--G2)!important;}.bg-amber-50{background:var(--B2)!important;}.bg-violet-50{background:var(--C2)!important;}
+    .chip{background:var(--s2)!important;border:1px solid var(--b1)!important;color:var(--ink2)!important;border-radius:999px!important;}
+    .sidebar-item{border:1px solid transparent!important;color:var(--ink2)!important;border-radius:10px!important;padding:10px 12px!important;font-weight:600!important;}
+    .sidebar-item:hover{background:var(--s3)!important;color:var(--ink)!important;}.sidebar-item.bg-slate-900{background:linear-gradient(135deg,rgba(79,158,255,.15),rgba(79,158,255,.05))!important;border-color:rgba(79,158,255,.2)!important;color:var(--A)!important;}
+    .seg-btn{border-radius:8px!important;color:var(--ink3)!important;}.seg-btn:hover{background:var(--s3)!important;color:var(--ink)!important;}.seg-btn.active{background:var(--A)!important;color:#fff!important;box-shadow:0 2px 10px rgba(79,158,255,.3)!important;}
+    input,select,textarea{background:var(--s2)!important;border:1px solid var(--b1)!important;color:var(--ink)!important;caret-color:var(--A);} input::placeholder,textarea::placeholder{color:var(--ink3)!important;}
+    table thead th{background:var(--s2)!important;color:var(--ink3)!important;border-color:var(--b1)!important;} table tbody td{border-color:var(--b1)!important;color:var(--ink2)!important;} tbody tr:hover td{background:var(--s2)!important;}
+    .modal-overlay{background:rgba(0,0,0,.75)!important;backdrop-filter:blur(6px)!important;}
+    #theme-toggle-ui{width:38px;height:38px;border-radius:10px;border:1px solid var(--b2);background:var(--s2);color:var(--ink2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    #theme-toggle-ui:hover{background:var(--s3);color:var(--ink);}
+    ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:99px;border:none}::-webkit-scrollbar-thumb:hover{background:var(--b2)}
+    @media(max-width:1100px){aside{position:fixed;left:-280px;top:0;width:260px;height:100vh;z-index:80;transition:left .28s cubic-bezier(.4,0,.2,1)} aside.mobile-open{left:0;box-shadow:6px 0 40px rgba(0,0,0,.6)} }
+  </style>
+
+
+
+  <!-- Pro UX enhancement layer -->
+  <style id="tigersoft-pro-ux-enhancements">
+    .pro-hero{position:relative;overflow:hidden;border:1px solid var(--b1);border-radius:28px;background:linear-gradient(135deg,rgba(79,158,255,.16),rgba(167,139,250,.08) 45%,var(--s1));padding:24px;display:grid;grid-template-columns:1.4fr .9fr;gap:18px;align-items:stretch;}
+    .pro-hero:before{content:'';position:absolute;inset:auto -10% -45% 40%;height:220px;background:radial-gradient(circle,rgba(79,158,255,.18),transparent 60%);pointer-events:none;}
+    .pro-hero-title{font-weight:900;font-size:26px;line-height:1.15;letter-spacing:-.03em;color:var(--ink);}
+    .pro-hero-sub{margin-top:8px;color:var(--ink2);font-size:13px;line-height:1.7;max-width:760px;}
+    .pro-hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+    .pro-pill{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;border:1px solid var(--b1);background:rgba(255,255,255,.035);color:var(--ink2);font-size:11px;font-weight:800;}
+    .pro-pill i{color:var(--A)}
+    .pro-insight-card{border:1px solid var(--b1);border-radius:22px;background:rgba(14,17,23,.60);padding:18px;backdrop-filter:blur(10px);position:relative;z-index:1;}
+    [data-theme="light"] .pro-insight-card{background:rgba(255,255,255,.68)}
+    .pro-insight-label{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);}
+    .pro-insight-main{margin-top:8px;font-size:15px;font-weight:800;line-height:1.55;color:var(--ink);}
+    .pro-insight-mini{margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .pro-mini{padding:9px;border-radius:14px;background:var(--s2);border:1px solid var(--b1);}
+    .pro-mini .n{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--ink)}
+    .pro-mini .l{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);font-weight:800;margin-top:2px;}
+    .pro-kpi-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--s2);border:1px solid var(--b1);color:var(--A);}
+    #page-dashboard .grid.grid-cols-2.lg\:grid-cols-5 > div{position:relative;overflow:hidden;}
+    #page-dashboard .grid.grid-cols-2.lg\:grid-cols-5 > div:before{content:'';position:absolute;left:0;top:0;width:4px;height:100%;background:var(--A);opacity:.85;}
+    #page-dashboard .grid.grid-cols-2.lg\:grid-cols-5 > div:nth-child(2):before{background:var(--G)}
+    #page-dashboard .grid.grid-cols-2.lg\:grid-cols-5 > div:nth-child(3):before{background:var(--B)}
+    #page-dashboard .grid.grid-cols-2.lg\:grid-cols-5 > div:nth-child(4):before{background:var(--C)}
+    #page-dashboard .grid.grid-cols-2.lg\:grid-cols-5 > div:nth-child(5):before{background:linear-gradient(180deg,var(--A),var(--C))}
+    .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+    .quick-card{border:1px solid var(--b1);border-radius:18px;background:var(--s1);padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+    .quick-card:hover{transform:translateY(-2px);border-color:var(--b2);background:var(--s2);}
+    .quick-ico{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--A2);color:var(--A);flex-shrink:0;}
+    .quick-title{font-size:13px;font-weight:900;color:var(--ink);}
+    .quick-sub{font-size:10px;color:var(--ink3);font-weight:700;margin-top:2px;}
+    .empty-state{padding:36px 20px;text-align:center;color:var(--ink3);}
+    .empty-state i{font-size:28px;color:var(--A);margin-bottom:10px;}
+    .device-rank-card{position:relative;overflow:hidden;}
+    .device-rank-card:after{content:'';position:absolute;right:-20px;top:-20px;width:64px;height:64px;border-radius:50%;background:var(--A2);}
+    @media(max-width:1100px){.pro-hero{grid-template-columns:1fr}.quick-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:640px){.pro-hero{padding:18px;border-radius:22px}.pro-hero-title{font-size:21px}.pro-insight-mini{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}}
+  </style>
+
+
+
+  <!-- Executive Dashboard Layout v1 -->
+  <style id="executive-dashboard-v1">
+    .exec-layout{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(320px,.85fr);gap:18px;align-items:stretch;}
+    .exec-radar-card{position:relative;overflow:hidden;min-height:540px;background:linear-gradient(135deg,rgba(79,158,255,.10),rgba(167,139,250,.06) 38%,var(--s1))!important;}
+    .exec-radar-card:before{content:'';position:absolute;inset:-35% -15% auto auto;width:360px;height:360px;border-radius:999px;background:radial-gradient(circle,rgba(79,158,255,.20),transparent 66%);pointer-events:none;}
+    .exec-radar-head{position:relative;z-index:1;padding:22px 24px 8px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+    .exec-eyebrow{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--A);display:flex;align-items:center;gap:8px;}
+    .exec-title{font-size:20px;font-weight:950;letter-spacing:-.03em;color:var(--ink);margin-top:6px;}
+    .exec-sub{font-size:12px;font-weight:700;color:var(--ink2);margin-top:4px;}
+    .exec-toggle{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--b1);border-radius:999px;padding:7px 11px;color:var(--ink2);font-size:11px;font-weight:900;white-space:nowrap;}
+    .exec-radar-body{position:relative;z-index:1;height:430px;padding:2px 18px 20px;}
+    .exec-side{display:grid;grid-template-rows:auto auto 1fr;gap:14px;}
+    .exec-panel{background:var(--s1);border:1px solid var(--b1);border-radius:22px;padding:18px;overflow:hidden;}
+    .exec-panel:hover{border-color:var(--b2);}
+    .exec-panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+    .exec-panel-title{font-size:13px;font-weight:950;color:var(--ink);display:flex;align-items:center;gap:8px;}
+    .exec-badge{font-size:10px;font-weight:900;color:var(--ink3);border:1px solid var(--b1);background:var(--s2);border-radius:999px;padding:4px 8px;}
+    .exec-ai-list{display:flex;flex-direction:column;gap:10px;}
+    .exec-ai-item{display:flex;gap:11px;align-items:flex-start;background:var(--s2);border:1px solid var(--b1);border-radius:16px;padding:12px;}
+    .exec-ai-ico{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;}
+    .exec-ai-t{font-size:12px;font-weight:950;color:var(--ink);line-height:1.35;}
+    .exec-ai-s{font-size:11px;font-weight:700;color:var(--ink2);line-height:1.45;margin-top:2px;}
+    .exec-device-list{display:flex;flex-direction:column;gap:10px;}
+    .exec-device-row{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;}
+    .exec-rank{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:800;color:var(--ink3);text-align:center;}
+    .exec-dev-name{font-size:12px;font-weight:900;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .exec-dev-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:800;color:var(--ink2);}
+    .exec-bar{grid-column:2/4;height:5px;border-radius:999px;background:var(--s3);overflow:hidden;margin-top:-4px;}
+    .exec-bar > span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--A),var(--C));}
+    .exec-snapshot{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+    .exec-snap{background:var(--s2);border:1px solid var(--b1);border-radius:16px;padding:12px;}
+    .exec-snap-n{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:800;color:var(--ink);}
+    .exec-snap-l{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:4px;}
+    .exec-trend-strip{background:var(--s1);border:1px solid var(--b1);border-radius:24px;overflow:hidden;}
+    .exec-trend-head{padding:18px 22px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .exec-trend-canvas{height:280px;padding:14px 18px 18px;}
+    @media(max-width:1180px){.exec-layout{grid-template-columns:1fr}.exec-radar-card{min-height:500px}.exec-side{grid-template-columns:1fr 1fr;grid-template-rows:auto}.exec-side .exec-panel:last-child{grid-column:1/-1}.exec-radar-body{height:390px}}
+    @media(max-width:760px){.exec-side{grid-template-columns:1fr}.exec-snapshot{grid-template-columns:repeat(3,1fr)}.exec-radar-head{flex-direction:column}.exec-radar-body{height:360px;padding-left:6px;padding-right:6px}.exec-radar-card{min-height:470px}.exec-title{font-size:18px}.exec-trend-canvas{height:240px}}
+  </style>
+
 </head>
 
-<body class="min-h-screen flex">
+<body class="min-h-screen flex" data-theme="dark">
+  <div class="glow-bg"></div>
 
   <!-- LOGIN -->
   <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-grid hidden">
@@ -142,8 +279,8 @@
        class="w-10 h-10 object-contain">
 </div>
         <div>
-          <p class="text-[11px] font-extrabold tracking-widest text-slate-500 uppercase">Portfolio</p>
-          <h2 class="text-lg font-extrabold leading-tight">Soratun Seelueng</h2>
+          <p class="text-[11px] font-extrabold tracking-widest text-slate-500 uppercase">Service Intelligence</p>
+          <h2 class="text-lg font-extrabold leading-tight">TigerSoft</h2>
         </div>
       </div>
     </div>
@@ -192,9 +329,9 @@
     <header class="bg-white border-b border-slate-200 sticky top-0 z-20">
       <div class="px-4 md:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center md:hidden">
+          <button type="button" onclick="toggleMobileSidebar()" class="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center md:hidden">
             <i class="fas fa-bars"></i>
-          </div>
+          </button>
           <div>
             <h1 id="page-title" class="text-xl font-extrabold leading-tight">Dashboard</h1>
             <div class="mt-1 flex flex-wrap items-center gap-2">
@@ -206,6 +343,7 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
+          <button id="theme-toggle-ui" type="button" onclick="toggleThemeUI()" title="Dark / Light"><i id="theme-toggle-icon" class="fa-solid fa-moon"></i></button>
           <!-- filter -->
           <div class="flex items-center bg-slate-100 p-1 rounded-2xl">
             <button onclick="setFilterType('day')" id="f-day" class="seg-btn px-4 py-2 text-xs font-extrabold rounded-2xl text-slate-600 hover:text-slate-900">วันนี้</button>
@@ -246,6 +384,37 @@
 
         <!-- DASHBOARD -->
         <section id="page-dashboard" class="page-content space-y-6 fade-up">
+
+          <!-- PRO HERO / EXECUTIVE INSIGHT -->
+          <div class="pro-hero fade-up">
+            <div>
+              <div class="pro-pill"><i class="fa-solid fa-wand-magic-sparkles"></i> Service Intelligence Dashboard</div>
+              <h2 class="pro-hero-title mt-4">ภาพรวมงาน Service & Project </h2>
+              <p class="pro-hero-sub">ติดตามจำนวนงาน แยกประเภทงาน สรุปอุปกรณ์ และแนวโน้มโครงการในช่วงเวลาที่เลือก พร้อม Quick Action สำหรับทีมปฏิบัติงาน</p>
+              <div class="pro-hero-meta">
+                <span class="pro-pill"><i class="fa-solid fa-database"></i><span id="pro-records">0 Records</span></span>
+                <span class="pro-pill"><i class="fa-solid fa-microchip"></i><span id="pro-device-total">0 Devices</span></span>
+                <span class="pro-pill"><i class="fa-solid fa-layer-group"></i><span id="pro-main-type">Main: —</span></span>
+              </div>
+            </div>
+            <div class="pro-insight-card">
+              <div class="pro-insight-label">Auto Insight</div>
+              <div id="pro-insight-main" class="pro-insight-main">กำลังรอข้อมูลเพื่อสรุปภาพรวม…</div>
+              <div class="pro-insight-mini">
+                <div class="pro-mini"><div class="n" id="pro-active-days">0</div><div class="l">Active Days</div></div>
+                <div class="pro-mini"><div class="n" id="pro-avg-job">0</div><div class="l">Avg / Day</div></div>
+                <div class="pro-mini"><div class="n" id="pro-project-share">0%</div><div class="l">Project Share</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- QUICK ACTIONS -->
+          <div class="quick-grid">
+            <div class="quick-card admin-only hidden" onclick="showPage('input')"><div class="quick-ico"><i class="fa-solid fa-plus"></i></div><div><div class="quick-title">บันทึกงานใหม่</div><div class="quick-sub">Add service record</div></div></div>
+            <div class="quick-card" onclick="showPage('charts')"><div class="quick-ico" style="background:var(--C2);color:var(--C)"><i class="fa-solid fa-chart-line"></i></div><div><div class="quick-title">ดู Analytics</div><div class="quick-sub">Trend / Work Mix</div></div></div>
+            <div class="quick-card" onclick="exportAll()"><div class="quick-ico" style="background:var(--G2);color:var(--G)"><i class="fa-solid fa-file-excel"></i></div><div><div class="quick-title">Export ข้อมูล</div><div class="quick-sub">Download Excel</div></div></div>
+            <div class="quick-card" onclick="document.getElementById('table-search')?.focus()"><div class="quick-ico" style="background:var(--B2);color:var(--B)"><i class="fa-solid fa-magnifying-glass"></i></div><div><div class="quick-title">ค้นหารายการ</div><div class="quick-sub">Company / Type / Date</div></div></div>
+          </div>
           <!-- KPI -->
           <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-soft transition group">
@@ -490,27 +659,62 @@
     </div>
 
     <!-- Dashboard layout (เหมือนรูปเดิม) -->
-    <div class="charts-dashboard grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+    <div class="charts-dashboard space-y-5">
+      <div class="exec-layout">
+        <div class="exec-radar-card bg-white rounded-2xl border border-slate-200 shadow-sm">
+          <div class="exec-radar-head">
+            <div>
+              <div class="exec-eyebrow"><i class="fa-solid fa-bullseye"></i>Service Intelligence</div>
+              <div class="exec-title">Work Radar Overview</div>
+              <div class="exec-sub">ภาพรวมประเภทงานตามช่วงเวลาที่เลือก • ข้อมูลจากฐานเดิม</div>
+            </div>
+            <div class="exec-toggle"><i class="fa-solid fa-chart-simple"></i> Radar View</div>
+          </div>
+          <div class="exec-radar-body" id="slot-job-dashboard"></div>
+        </div>
+
+        <div class="exec-side">
+          <div class="exec-panel">
+            <div class="exec-panel-h">
+              <div class="exec-panel-title"><i class="fa-solid fa-wand-magic-sparkles text-blue-600"></i>Auto Insight</div>
+              <span class="exec-badge">Live</span>
+            </div>
+            <div class="exec-ai-list" id="exec-ai-list">
+              <div class="exec-ai-item"><div class="exec-ai-ico" style="background:var(--A2);color:var(--A)"><i class="fa-solid fa-circle-notch fa-spin"></i></div><div><div class="exec-ai-t">กำลังสรุปข้อมูล</div><div class="exec-ai-s">รอโหลดข้อมูลจาก Firebase</div></div></div>
+            </div>
+          </div>
+
+          <div class="exec-panel">
+            <div class="exec-panel-h">
+              <div class="exec-panel-title"><i class="fa-solid fa-microchip text-blue-600"></i>Top Devices</div>
+              <span class="exec-badge">Exclude Project</span>
+            </div>
+            <div class="exec-device-list" id="exec-device-rank"></div>
+          </div>
+
+          <div class="exec-panel">
+            <div class="exec-panel-h">
+              <div class="exec-panel-title"><i class="fa-solid fa-gauge-high text-blue-600"></i>Snapshot</div>
+              <span class="exec-badge">Summary</span>
+            </div>
+            <div class="exec-snapshot">
+              <div class="exec-snap"><div class="exec-snap-n" id="exec-total">0</div><div class="exec-snap-l">Total</div></div>
+              <div class="exec-snap"><div class="exec-snap-n" id="exec-main">-</div><div class="exec-snap-l">Top Type</div></div>
+              <div class="exec-snap"><div class="exec-snap-n" id="exec-device-count">0</div><div class="exec-snap-l">Devices</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="exec-trend-strip">
+        <div class="exec-trend-head">
           <div>
-            <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-chart-area text-blue-600 mr-2"></i>Trend รายเดือน</h3>
-            <p class="text-[11px] text-slate-500 font-bold mt-1">จำนวนงานในแต่ละเดือน (แยกตามประเภท)</p>
+            <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-chart-area text-blue-600 mr-2"></i>Monthly Trend</h3>
+            <p class="text-[11px] text-slate-500 font-bold mt-1">แนวโน้มจำนวนงานรายเดือน แยกตามประเภทงาน</p>
           </div>
           <span class="chip"><i class="fa-regular fa-clock"></i>Monthly</span>
         </div>
-        <div class="p-5 h-[360px]" id="slot-trend-dashboard"></div>
-      </div>
-
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-          <div>
-            <h3 class="text-sm font-extrabold text-slate-900"><i class="fas fa-chart-pie text-blue-600 mr-2"></i>Work Mix</h3>
-            <p class="text-[11px] text-slate-500 font-bold mt-1">สัดส่วนงานในช่วงเวลาที่เลือก</p>
-          </div>
-          <span class="chip"><i class="fa-solid fa-ring"></i>Mix</span>
-        </div>
-        <div class="p-5 h-[360px]" id="slot-job-dashboard"></div>
+        <div class="exec-trend-canvas" id="slot-trend-dashboard"></div>
       </div>
     </div>
 
@@ -641,6 +845,29 @@
     </div>
     </div>
   </div>
+
+
+<script>
+  (function(){
+    const saved = localStorage.getItem('ts_service_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.setAttribute('data-theme', saved);
+      const icon = document.getElementById('theme-toggle-icon');
+      if (icon) icon.className = saved === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    });
+  })();
+  window.toggleThemeUI = function(){
+    const current = document.body.getAttribute('data-theme') || document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    document.body.setAttribute('data-theme', next);
+    localStorage.setItem('ts_service_theme', next);
+    const icon = document.getElementById('theme-toggle-icon');
+    if (icon) icon.className = next === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  };
+  window.toggleMobileSidebar = function(){ document.querySelector('aside')?.classList.toggle('mobile-open'); };
+</script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -958,12 +1185,24 @@
     btns.forEach(b => { if (b.id !== 'btnLogin') b.disabled = !!isLoading; });
   };
 
+  // Clear stale chart canvas while Firebase is refreshing.
+  // Prevents the previous Work Mix doughnut/radar from flashing before the new Radar renders.
+  const clearChartCanvas = (chartKey, canvasId) => {
+    try {
+      if (charts?.[chartKey]) { charts[chartKey].destroy(); charts[chartKey] = null; }
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas?.getContext?.('2d');
+      if (canvas && ctx) ctx.clearRect(0, 0, canvas.width || canvas.clientWidth, canvas.height || canvas.clientHeight);
+    } catch (e) { console.warn('clearChartCanvas failed:', e); }
+  };
+
   window.refreshData = async () => {
     await fetchHeaders();
     const { start, end } = calcRange();
     updateRangeLabel(start, end);
 
     setLoading(true);
+    clearChartCanvas('job', 'jobChart');
     try {
       const q = query(
         collection(db, "service_tiger"),
@@ -1015,6 +1254,11 @@
         tbody.innerHTML += row + `</tr>`;
       });
 
+      if (globalData.length === 0) {
+        const colCount = 3 + deviceHeaders.length;
+        tbody.innerHTML = `<tr><td colspan="${colCount}" class="empty-state"><i class="fa-regular fa-folder-open"></i><div class="font-extrabold text-slate-500">ไม่มีข้อมูลในช่วงเวลาที่เลือก</div><div class="text-[11px] mt-1 text-slate-500">ลองเปลี่ยนช่วงเวลา หรือ Import/บันทึกข้อมูลใหม่</div></td></tr>`;
+      }
+
       // KPI render
       const totalJobs = Object.values(stats).reduce((a,b)=>a+b,0) || 0;
       setKPI('sum-install', 'pct-install', stats.INSTALL, totalJobs);
@@ -1026,12 +1270,18 @@
       // device totals cards
       const devWrap = document.getElementById('device-totals');
       if (devWrap) {
-        devWrap.innerHTML = deviceHeaders.map(h => `
-          <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50">
-            <p class="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider truncate">${escapeHtml(h.name)}</p>
-            <p class="mt-1 text-xl font-extrabold text-slate-900">${totals[h.id] || 0}</p>
+        const rankedDevices = [...deviceHeaders]
+          .map(h => ({ ...h, total: Number(totals[h.id] || 0) }))
+          .sort((a, b) => b.total - a.total);
+        devWrap.innerHTML = rankedDevices.map((h, idx) => `
+          <div class="device-rank-card p-3 rounded-2xl border border-slate-200 bg-slate-50">
+            <div class="flex items-center justify-between gap-2 relative z-[1]">
+              <p class="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider truncate">${escapeHtml(h.name)}</p>
+              <span class="text-[10px] font-extrabold text-slate-500">#${idx + 1}</span>
+            </div>
+            <p class="mt-1 text-xl font-extrabold text-slate-900 relative z-[1]">${h.total}</p>
           </div>
-        `).join('');
+        `).join('') || `<div class="col-span-full empty-state"><i class="fa-solid fa-microchip"></i><div class="font-extrabold">ยังไม่มีหัวข้ออุปกรณ์</div></div>`;
       }
 
       // search binding (client filter)
@@ -1039,6 +1289,7 @@
 
       // charts update (if block is mounted)
       await updateCharts(stats, totals, { start, end });
+      updateProUX(stats, totals, { start, end });
 
     } catch (e) {
       console.error(e);
@@ -1047,6 +1298,34 @@
       setLoading(false);
     }
   };
+
+
+  function updateProUX(stats, totals, range) {
+    const totalJobs = Object.values(stats || {}).reduce((a,b)=>a+(Number(b)||0),0);
+    const deviceTotal = Object.values(totals || {}).reduce((a,b)=>a+(Number(b)||0),0);
+    const entries = Object.entries(stats || {}).sort((a,b)=>(Number(b[1])||0)-(Number(a[1])||0));
+    const top = entries[0] || ['—',0];
+    const activeDays = new Set((globalData || []).map(d => d.workDate).filter(Boolean)).size;
+    const avg = activeDays ? (totalJobs / activeDays) : 0;
+    const projectShare = totalJobs ? ((Number(stats.PROJECT||0) / totalJobs) * 100) : 0;
+
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setText('pro-records', `${totalJobs.toLocaleString()} Records`);
+    setText('pro-device-total', `${deviceTotal.toLocaleString()} Devices`);
+    setText('pro-main-type', `Main: ${top[0]} (${top[1] || 0})`);
+    setText('pro-active-days', activeDays.toLocaleString());
+    setText('pro-avg-job', avg ? avg.toFixed(1) : '0');
+    setText('pro-project-share', `${projectShare.toFixed(0)}%`);
+
+    let insight = 'ยังไม่มีข้อมูลในช่วงเวลานี้ แนะนำให้ตรวจสอบช่วงเวลา หรือ Import ข้อมูลเพิ่มเติม';
+    if (totalJobs > 0) {
+      const second = entries[1] || ['—',0];
+      insight = `ช่วง ${range.start} – ${range.end} มีงานรวม ${totalJobs.toLocaleString()} รายการ โดยประเภทเด่นคือ ${top[0]} (${top[1]} รายการ) และรองลงมาคือ ${second[0]} (${second[1]} รายการ)`;
+      if (projectShare >= 40) insight += ' • สัดส่วน Project สูง ควรติดตามทรัพยากรและกำหนดส่งมอบใกล้ชิด';
+      else if (deviceTotal > 0) insight += ` • อุปกรณ์รวมที่เกี่ยวข้อง ${deviceTotal.toLocaleString()} รายการ`;
+    }
+    setText('pro-insight-main', insight);
+  }
 
   // --- UI helpers ---
   function setKPI(sumId, pctId, value, total) {
@@ -1508,6 +1787,14 @@ const barShadowPlugin = {
   }
 };
 
+
+// Radar chart no longer draws center total text.
+// This avoids duplicated/overlapping "งานทั้งหมด" labels on small screens.
+const radarCenterTextPlugin = {
+  id: 'radarCenterTextPlugin',
+  afterDraw() {}
+};
+
   
   const renderMixSummaryAnalytics = (stats = {}, range) => {
     const wrap = document.getElementById('mix-summary-analytics');
@@ -1545,10 +1832,65 @@ const barShadowPlugin = {
     }).join('');
   };
 
+
+
+function renderExecutiveHome(stats = {}, totals = {}) {
+  const total = JOB_ORDER.reduce((a, k) => a + (Number(stats?.[k]) || 0), 0);
+  const rows = JOB_ORDER.map(k => ({ key: k, label: displayJobLabel(k), value: Number(stats?.[k]) || 0, color: COLORS[k] || '#64748b' }))
+    .sort((a,b) => b.value - a.value);
+  const top = rows[0] || { key:'-', label:'-', value:0, color:'#64748b' };
+  const low = rows.filter(x => x.value > 0).slice(-1)[0] || rows[rows.length-1] || top;
+  const topPct = total ? ((top.value / total) * 100) : 0;
+  const charge = Number(stats?.['Onsite-Charge']) || 0;
+  const project = Number(stats?.['PROJECT']) || 0;
+
+  const totalEl = document.getElementById('exec-total');
+  const mainEl = document.getElementById('exec-main');
+  const deviceCountEl = document.getElementById('exec-device-count');
+  if (totalEl) totalEl.textContent = String(total || 0);
+  if (mainEl) mainEl.textContent = top.value > 0 ? top.label.replace('Onsite-', '') : '-';
+  if (deviceCountEl) deviceCountEl.textContent = String(deviceHeaders.length || 0);
+
+  const ai = document.getElementById('exec-ai-list');
+  if (ai) {
+    ai.innerHTML = `
+      <div class="exec-ai-item">
+        <div class="exec-ai-ico" style="background:var(--A2);color:var(--A)"><i class="fa-solid fa-ranking-star"></i></div>
+        <div><div class="exec-ai-t">${escapeHtml(top.label)} มากที่สุด</div><div class="exec-ai-s">คิดเป็น ${topPct.toFixed(1)}% ของงานทั้งหมด (${top.value} งาน)</div></div>
+      </div>
+      <div class="exec-ai-item">
+        <div class="exec-ai-ico" style="background:var(--B2);color:var(--B)"><i class="fa-solid fa-receipt"></i></div>
+        <div><div class="exec-ai-t">Onsite-Charge ${charge} งาน</div><div class="exec-ai-s">ใช้ติดตามงานที่เกี่ยวข้องกับรายได้และการเก็บค่าใช้จ่าย</div></div>
+      </div>
+      <div class="exec-ai-item">
+        <div class="exec-ai-ico" style="background:var(--C2);color:var(--C)"><i class="fa-solid fa-diagram-project"></i></div>
+        <div><div class="exec-ai-t">Project ${project} งาน</div><div class="exec-ai-s">หมวดที่มีปริมาณน้อยสุดคือ ${escapeHtml(low.label)} (${low.value} งาน)</div></div>
+      </div>
+    `;
+  }
+
+  const rank = document.getElementById('exec-device-rank');
+  if (rank) {
+    const devRows = (deviceHeaders || []).map(h => ({ name: h.name, value: Number(totals?.[h.id]) || 0 }))
+      .sort((a,b) => b.value - a.value)
+      .slice(0, 5);
+    const max = Math.max(...devRows.map(x => x.value), 1);
+    rank.innerHTML = devRows.length ? devRows.map((x, i) => `
+      <div class="exec-device-row">
+        <div class="exec-rank">${i+1}</div>
+        <div class="exec-dev-name" title="${escapeHtml(x.name)}">${escapeHtml(x.name)}</div>
+        <div class="exec-dev-val">${x.value}</div>
+        <div class="exec-bar"><span style="width:${Math.max(4, (x.value / max) * 100)}%"></span></div>
+      </div>
+    `).join('') : `<div class="text-[12px] font-bold text-slate-500">ยังไม่มีหัวข้ออุปกรณ์</div>`;
+  }
+}
+
 window.updateCharts = async (stats, totals, range) => {
     const analytics = isAnalyticsMode();
 
-    
+    if (!analytics) renderExecutiveHome(stats, totals);
+
     if (analytics) renderMixSummaryAnalytics(stats, range);
 // --- trend data (monthly) ---
     const monthLabels = analytics ? MONTHS_EN : MONTHS_TH;
@@ -1661,7 +2003,9 @@ window.updateCharts = async (stats, totals, range) => {
       }
     }
 
-    // --- Work mix / All Service (doughnut) ---
+    // --- Work mix / All Service ---
+    // Dashboard/Home: Radar chart (ใยแมงมุม)
+    // Analytics page: keep premium doughnut with summary panel
     const jobEl = document.getElementById('jobChart');
     if (jobEl) {
       const jctx = jobEl.getContext('2d');
@@ -1669,40 +2013,122 @@ window.updateCharts = async (stats, totals, range) => {
 
       const labels = JOB_ORDER.map(k => displayJobLabel(k, analytics));
       const values = JOB_ORDER.map(k => Number(stats?.[k]) || 0);
+      const totalJobs = values.reduce((acc, v) => acc + (Number(v) || 0), 0);
+      const maxValue = Math.max(...values, 5);
+      const suggestedMax = Math.ceil(maxValue * 1.25 / 5) * 5;
 
-      charts.job = new Chart(jctx, {
-        type: 'doughnut',
-        data: {
-          labels,
-          datasets: [{
-            data: values,
-            backgroundColor: JOB_ORDER.map(k => COLORS[k]),
-            borderColor: '#ffffff',
-            borderWidth: analytics ? 8 : 6,
-            hoverOffset: 6,
-            borderRadius: 10,
-            spacing: 3
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: analytics ? '68%' : '72%',
-          layout: { padding: analytics ? 28 : 10 },
-          plugins: {
-            legend: analytics ? { display: false } : {
-              position: 'bottom',
-              labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 10, font: { family: 'Sarabun', size: 11, weight: '700' } }
+      if (!analytics) {
+        charts.job = new Chart(jctx, {
+          type: 'radar',
+          data: {
+            labels,
+            datasets: [{
+              label: 'จำนวนงาน',
+              data: values,
+              backgroundColor: 'rgba(79,158,255,.18)',
+              borderColor: '#4f9eff',
+              pointBackgroundColor: JOB_ORDER.map(k => COLORS[k]),
+              pointBorderColor: 'rgba(255,255,255,.92)',
+              pointBorderWidth: 3,
+              pointRadius: 5,
+              pointHoverRadius: 7,
+              pointHoverBorderWidth: 3,
+              borderWidth: 3,
+              fill: true,
+              tension: .25
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: { padding: { top: 28, right: 46, bottom: 28, left: 46 } },
+            interaction: { mode: 'nearest', intersect: true },
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: 'circle',
+                  boxWidth: 10,
+                  color: getComputedStyle(document.documentElement).getPropertyValue('--ink2').trim() || '#8896b0',
+                  font: { family: 'Sarabun', size: 11, weight: '800' },
+                  generateLabels(chart) {
+                    return JOB_ORDER.map((k, i) => ({
+                      text: `${displayJobLabel(k)} ${values[i] || 0}`,
+                      fillStyle: COLORS[k],
+                      strokeStyle: COLORS[k],
+                      lineWidth: 0,
+                      hidden: false,
+                      index: i
+                    }));
+                  }
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  title: (items) => items?.[0]?.label || '',
+                  label: (ctx) => {
+                    const value = Number(ctx.raw) || 0;
+                    const pct = totalJobs ? ((value / totalJobs) * 100).toFixed(1) : '0.0';
+                    return `จำนวน ${value} งาน (${pct}%)`;
+                  }
+                }
+              }
             },
-            tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}` } },
-            centerTextPlugin: analytics
-              ? { variant: 'analytics', label: 'Work', centerFill: '#0f172a', valueColor: '#ffffff', labelColor: '#e2e8f0' }
-              : { variant: 'default' },
-            percentCalloutsPlugin: { enabled: analytics }
-          }
-        },
-        plugins: analytics ? [centerTextPlugin, percentCalloutsPlugin] : [centerTextPlugin]
-      });
+            scales: {
+              r: {
+                beginAtZero: true,
+                suggestedMax,
+                angleLines: { color: 'rgba(148,163,184,.22)', lineWidth: 1 },
+                grid: { color: 'rgba(148,163,184,.18)', circular: false },
+                pointLabels: {
+                  color: (ctx) => COLORS[JOB_ORDER[ctx.index]] || '#8896b0',
+                  font: { family: 'Sarabun', size: 12, weight: '900' },
+                  callback: (label, index) => `${label}
+${values[index] || 0}`
+                },
+                ticks: {
+                  backdropColor: 'transparent',
+                  color: getComputedStyle(document.documentElement).getPropertyValue('--ink3').trim() || '#64748b',
+                  precision: 0,
+                  showLabelBackdrop: true,
+                  font: { family: 'Sarabun', size: 10, weight: '700' }
+                }
+              }
+            }
+          },
+          plugins: []
+        });
+      } else {
+        charts.job = new Chart(jctx, {
+          type: 'doughnut',
+          data: {
+            labels,
+            datasets: [{
+              data: values,
+              backgroundColor: JOB_ORDER.map(k => COLORS[k]),
+              borderColor: '#ffffff',
+              borderWidth: 8,
+              hoverOffset: 6,
+              borderRadius: 10,
+              spacing: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '68%',
+            layout: { padding: 28 },
+            plugins: {
+              legend: { display: false },
+              tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}` } },
+              centerTextPlugin: { variant: 'analytics', label: 'Work', centerFill: '#0f172a', valueColor: '#ffffff', labelColor: '#e2e8f0' },
+              percentCalloutsPlugin: { enabled: true }
+            }
+          },
+          plugins: [centerTextPlugin, percentCalloutsPlugin]
+        });
+      }
     }
 
     
